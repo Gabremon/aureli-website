@@ -1,207 +1,119 @@
-﻿import Cal, { getCalApi } from "@calcom/embed-react";
-import { useEffect, useMemo } from "react";
+﻿import { useEffect, useMemo } from "react";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import Cal, { getCalApi } from "@calcom/embed-react";
 import "./styles/App.css";
+import Header from "./components/Header";
+import Hire from "./pages/Hire";
+import Referrals from "./pages/Referrals";
 
-const navLinks = [
-  { label: "Services", href: "#services" },
-  { label: "Process", href: "#process" },
-  { label: "Use cases", href: "#use-cases" },
-  // { label: "Pricing", href: "#pricing" },
-  { label: "Demos", href: "#demos" },
-  { label: "FAQ", href: "#faq" },
-];
-
-const highlights = [
+const products = [
   {
-    title: "AI Receptionists",
-    description:
-      "Capture every call with custom voice agents that book appointments, answer FAQs, and hand off warm leads.",
+    title: "Predictive Hiring",
+    description: "Know when and how many people you need to hire—weeks in advance",
+    category: "Core",
   },
   {
-    title: "Outbound Outreach",
-    description:
-      "Launch compliant cold-calling and emailing bots that introduce your brand and qualify interest automatically.",
+    title: "Hiring Analytics",
+    description: "Real-time insights into your hiring patterns and workforce needs",
+    category: "Core",
   },
   {
-    title: "Follow-up Automations",
-    description:
-      "Keep prospects engaged with smart reminders, AI-drafted replies, and seamless CRM updates.",
-  },
-];
-
-const metrics = [
-  { value: "24/7", label: "Availability for voice and chat concierge" },
-  { value: "3 min", label: "Average lead follow-up time after go-live" },
-  { value: "40%", label: "Typical boost in booked appointments" },
-];
-
-// const partners = [
-//   "Front Range Dental Care",
-//   "Summit Fitness Club",
-//   "Peak HVAC Pros",
-//   "Aspen Legal Partners",
-//   "Urban Bloom Med Spa",
-//   "Mile High Home Services",
-// ];
-
-const steps = [
-  {
-    id: "01",
-    label: "Script and Scope",
-    detail:
-      "We capture your tone, document handoffs, and identify the calls, chats, or emails that AI should handle first.",
+    title: "Workforce Planning",
+    description: "Forecast staffing needs based on business metrics and trends",
+    category: "Core",
   },
   {
-    id: "02",
-    label: "Build and Train",
-    detail:
-      "Your agent learns from real conversations, plugs into your calendar or CRM, and passes compliance checks.",
+    title: "Smart Alerts",
+    description: "Automated notifications when hiring needs are approaching",
+    category: "Automation",
   },
   {
-    id: "03",
-    label: "Launch and Optimize",
-    detail:
-      "Go live with monitoring, analytics, and rapid updates that keep your automations sharp as your business evolves.",
+    title: "Timing Optimization",
+    description: "AI recommends the optimal time to start recruiting for each role",
+    category: "Automation",
+  },
+  {
+    title: "Volume Forecasting",
+    description: "Predict exactly how many candidates you'll need to source",
+    category: "Automation",
+  },
+  {
+    title: "Integration Hub",
+    description: "Connect with your HRIS, ATS, and scheduling systems",
+    category: "Platform",
+  },
+  {
+    title: "Custom Models",
+    description: "Build forecasting models tailored to your business needs",
+    category: "Platform",
+  },
+  {
+    title: "Referrals",
+    description: "Turn employees into your #1 source of high-quality hires with automated referral campaigns",
+    category: "Core",
   },
 ];
 
-const useCases = [
-  {
-    title: "24/7 AI front desk",
-    summary:
-      "Voice agents answer every call, collect details, and book time right on your calendar.",
-    outcome: "Captures 95% of first-time callers even after hours.",
-    category: "Service businesses",
-    highlights: [
-      "Appointment booking",
-      "Instant FAQ responses",
-      "Warm transfer to staff",
-    ],
-  },
-  {
-    title: "Outbound follow-up sequences",
-    summary:
-      "Automate cold calls, texts, and emails that introduce your offer and re-activate old leads.",
-    outcome: "Adds 18% more consults from stale inquiries.",
-    category: "Home services",
-    highlights: [
-      "Local caller ID dialing",
-      "Script variations by lead source",
-      "CRM and pipeline updates",
-    ],
-  },
-  {
-    title: "Prospect qualification inbox",
-    summary:
-      "AI triages inbound emails and chats, drafts replies, and alerts your team when a human touch is needed.",
-    outcome: "Saves 12 hours of manual inbox work each week.",
-    category: "Professional services",
-    highlights: [
-      "Lead scoring prompts",
-      "Calendar scheduling links",
-      "Compliance-ready conversation logs",
-    ],
-  },
-];
 
-const demos = [
-  {
-    title: "AI Receptionist Call Flow",
-    description:
-      "Hear how our concierge greets callers, captures lead info, and routes urgent conversations to your team.",
-    length: "02:08",
-    category: "Voice",
-  },
-  {
-    title: "Outbound Email Bot Walkthrough",
-    description:
-      "See the multi-touch campaigns that warm up cold prospects with personalized copy that sounds like you.",
-    length: "03:05",
-    category: "Email",
-  },
-  {
-    title: "Lead Follow-up Dashboard",
-    description:
-      "Track every outreach step, review transcripts, and trigger human follow-ups in one place.",
-    length: "01:47",
-    category: "Operations",
-  },
+const benefits = [
+  "Predict hiring needs weeks before shortages occur",
+  "Optimize hiring timing to reduce costs and improve retention",
+  "Never over-hire or under-hire with precise forecasting",
+  "Automated alerts keep you ahead of demand",
+  "Integrates seamlessly with your existing HR tech stack",
+  "Custom models adapt to your unique business patterns",
 ];
-
-/* const pricingOptions = [
-  {
-    name: "Build and Launch",
-    price: "$1,000 - $1,500",
-    period: "one-time",
-    description:
-      "Custom AI receptionist or outreach bot that reflects your brand, scripts, and preferred tools.",
-    inclusions: [
-      "Voice or chat setup with branded persona",
-      "Calendar, CRM, or phone system integrations",
-      "Training data prep plus live testing",
-    ],
-    featured: false,
-  },
-  {
-    name: "Monthly Retainer",
-    price: "$300",
-    period: "per month",
-    description:
-      "Ongoing coaching for your automations so they keep improving as your business grows.",
-    inclusions: [
-      "Performance reviews and reporting",
-      "Script refreshes and retraining",
-      "Priority support with human-in-the-loop QA",
-    ],
-    featured: true,
-  },
-]; */
 
 const testimonials = [
   {
     quote:
-      "Our AI receptionist books jobs while we are on-site. Weekend calls no longer slip through the cracks.",
-    author: "Lena Martinez",
-    role: "Owner, Mile High Home Services",
+      "Aureli tells us exactly when we need to start hiring and how many people we'll need. We've eliminated rush hiring and reduced our hiring costs by 30%.",
+    author: "Nick Prijic",
+    role: "Director of Operations",
+    company: "Fetch",
+    metric: "30%",
+    metricLabel: "reduction in hiring costs",
   },
   {
     quote:
-      "The outbound email bot keeps our pipeline warm without sounding robotic. It paid for itself in the first month.",
-    author: "Chris O'Neal",
-    role: "Managing Partner, Summit Fitness Club",
+      "The predictive hiring intelligence is game-changing. We know weeks in advance when we'll need to ramp up hiring, and we're always fully staffed.",
+    author: "Rachel Carey",
+    role: "Program Manager",
+    company: "Stitch Fix",
+    metric: "4-8 weeks",
+    metricLabel: "advance notice",
   },
 ];
 
-const contactChannels = [
-  { label: "Email", detail: "ali@aureliconsulting.com" },
-  { label: "Phone and SMS", detail: "720-555-0199" },
-  { label: "Office Hours", detail: "8am - 6pm MT, Mon-Sat" },
+const industries = [
+  "Retail",
+  "Hospitality",
+  "Healthcare",
+  "Logistics",
+  "Manufacturing",
+  "Food Service",
 ];
 
 const faqs = [
   {
-    question: "How fast can we launch?",
+    question: "What is predictive hiring?",
     answer:
-      "Most teams go live within 2 to 4 weeks. We map your scripts, train the AI with real conversations, and run a live pilot before rolling out to every lead source.",
+      "Predictive hiring uses AI to analyze your business data and predict when and how many people you'll need to hire—weeks before you need them. This helps you avoid rush hiring, reduce costs, and stay fully staffed.",
   },
   {
-    question: "Will the AI match our tone?",
+    question: "What features does Aureli offer?",
     answer:
-      "Yes. We build a brand style guide for every agent and fine-tune responses until they sound like a natural extension of your team, including pronunciations and local knowledge.",
+      "Aureli offers predictive hiring, hiring analytics, workforce planning, smart alerts, timing optimization, volume forecasting, integration capabilities, and custom forecasting models. See our features section above or learn more about the hiring process on our Hire page.",
   },
   {
-    question: "What does the monthly retainer include?",
+    question: "How do I get started?",
     answer:
-      "You get proactive tuning, analytics reviews, new script updates, and priority support. We monitor performance weekly and adjust sequences before issues surface.",
-  },
-  {
-    question: "Can you connect to our systems?",
-    answer:
-      "We integrate with popular CRMs, booking tools, and phone providers. If you have a custom stack, we use APIs or secure no-code connectors to make sure data flows cleanly.",
+      "Schedule a demo with our team to see how Aureli can transform your hiring decisions. We'll show you how the platform works and help you get set up with early access.",
   },
 ];
 
-function App() {
+
+function HomePage() {
   const currentYear = useMemo(() => new Date().getFullYear(), []);
 
   useEffect(() => {
@@ -228,10 +140,10 @@ function App() {
     (async function () {
       const cal = await getCalApi({ namespace: "30min" });
       cal("ui", {
-        theme: "dark",
+        theme: "light",
         cssVarsPerTheme: {
-          light: { "cal-brand": "#237cc5" },
-          dark: { "cal-brand": "#293bb7" },
+          light: { "cal-brand": "#2563eb" },
+          dark: { "cal-brand": "#2563eb" },
         },
         hideEventTypeDetails: false,
         layout: "month_view",
@@ -241,389 +153,401 @@ function App() {
 
   return (
     <div className="page">
-      <span aria-hidden="true" className="page__aurora" />
-      <span aria-hidden="true" className="page__aurora page__aurora--alt" />
-
-      <header className={`nav-wrapper`}>
-        <nav className="nav" data-reveal aria-label="Primary">
-          <a
-            className="nav__brand"
-            href="#"
-            aria-label="Aureli Automation Labs Home"
-          >
-            <span className="nav__logo">Aureli</span>
-            <span className="nav__descriptor">Automation Labs</span>
-          </a>
-          <div className="nav__links">
-            {navLinks.map(({ label, href }) => (
-              <a key={label} href={href}>
-                {label}
-              </a>
-            ))}
-          </div>
-          <a className="nav__cta" href="#contact">
-            Book a consult
-          </a>
-        </nav>
-      </header>
-
-      <section className="hero">
-        <div className="hero__grid">
-          <div className="hero__content" data-reveal>
-            <span className="hero__tag">AI for Local Businesses</span>
-            <h1 className="hero__title">
-              Generate more leads.
-              <br />
-              Make more money.
-            </h1>
-            <p className="hero__subtitle">
-              Aureli builds branded voice and chat automations that answer every
-              inquiry, qualify leads, and keep your team focused on the work
-              that matters.
-            </p>
-            <div className="hero__actions">
-              <a className="hero__primary" href="#contact">
-                Start your AI concierge plan
-              </a>
-              {/*
-              <a className="hero__secondary" href="#pricing">
-                See pricing
-              </a>
-              */}
-            </div>
-            <div className="hero__meta">
-              <span>✓ AI receptionists</span>
-              <span>✓ Cold outreach bots</span>
-              <span>✓ Monthly support</span>
-            </div>
-          </div>
-          <div className="hero__visual" data-reveal>
-            <div className="hero__glow" />
-            <div className="hero__orbit">
-              <div className="hero__node hero__node--primary" />
-              <div className="hero__node hero__node--secondary hero__node--one" />
-              <div className="hero__node hero__node--secondary hero__node--two" />
-              <div className="hero__node hero__node--secondary hero__node--three" />
-            </div>
-            <div className="hero__pulse hero__pulse--one" />
-            <div className="hero__pulse hero__pulse--two" />
-          </div>
-        </div>
-      </section>
+      <Header />
 
       <main>
-        <section className="section section--metrics">
-          <div className="metrics">
-            {metrics.map(({ value, label }) => (
-              <div className="metric" data-reveal key={label}>
-                <span className="metric__value">{value}</span>
-                <span className="metric__label">{label}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* <section className="section section--partners" id="partners">
-          <div className="section__header" data-reveal>
-            <span className="section__eyebrow">Trusted by local leaders</span>
-          </div>
-          <div className="partner-grid">
-            {partners.map((name) => (
-              <span className="partner" data-reveal key={name}>
-                {name}
-              </span>
-            ))}
-          </div>
-        </section> */}
-
-        <section className="section" id="services">
-          <div className="section__header" data-reveal>
-            <h2 className="section__title">
-              Services that keep every lead moving forward
-            </h2>
-            <p className="section__subtitle">
-              Comprehensive AI automation solutions designed specifically for
-              local businesses
-            </p>
-          </div>
-          <div className="grid">
-            {highlights.map(({ title, description }) => (
-              <article className="card" data-reveal key={title}>
-                {/* <span className="card__icon" aria-hidden="true">
-                  {icon}
-                </span> */}
-                <h3>{title}</h3>
-                <p>{description}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="section section--alt" id="process">
-          <div className="section__header" data-reveal>
-            <span className="section__eyebrow">Our Process</span>
-            <h2 className="section__title">How we launch your AI concierge</h2>
-            <p className="section__subtitle">
-              We blend automation expertise with local business know-how so your
-              agent sounds authentic and delivers measurable impact from the
-              very first week.
-            </p>
-          </div>
-          <div className="timeline">
-            {steps.map(({ id, label, detail }) => (
-              <div className="timeline__step" data-reveal key={id}>
-                <span className="timeline__id">{id}</span>
-                <div className="timeline__content">
-                  <h3>{label}</h3>
-                  <p>{detail}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="section section--cases" id="use-cases">
-          <div className="section__header" data-reveal>
-            <span className="section__eyebrow">Use Cases</span>
-            <h2 className="section__title">
-              Popular automations for local teams
-            </h2>
-            <p className="section__subtitle">
-              From inbound calls to outbound campaigns, we tailor every workflow
-              to the systems you already rely on and the customers you serve.
-            </p>
-          </div>
-          <div className="case-grid">
-            {useCases.map(
-              ({
-                title,
-                summary,
-                outcome,
-                category,
-                highlights: caseHighlights,
-              }) => (
-                <article className="case-card" data-reveal key={title}>
-                  <span className="case-card__badge">{category}</span>
-                  <h3>{title}</h3>
-                  <p>{summary}</p>
-                  <ul className="case-card__highlights">
-                    {caseHighlights.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                  <div className="case-card__outcome">{outcome}</div>
-                </article>
-              )
-            )}
-          </div>
-        </section>
-
-        {/*
-        <section className="section section--pricing" id="pricing">
-          <div className="section__header" data-reveal>
-            <span className="section__eyebrow">Pricing</span>
-            <h2 className="section__title">Straightforward pricing</h2>
-            <p className="section__subtitle">
-              Invest once to build your AI agent, then keep us on retainer to
-              refine scripts, targeting, and results.
-            </p>
-          </div>
-          <div className="pricing-grid">
-            {pricingOptions.map(
-              ({ name, price, period, description, inclusions, featured }) => (
-                <article
-                  className={`pricing-card ${
-                    featured ? "pricing-card--featured" : ""
-                  }`}
-                  data-reveal
-                  key={name}
-                >
-                  {featured && (
-                    <span className="pricing-card__badge">Most Popular</span>
-                  )}
-                  <h3>{name}</h3>
-                  <div className="pricing-card__price">
-                    <span className="pricing-card__amount">{price}</span>
-                    <span className="pricing-card__period">{period}</span>
-                  </div>
-                  <p className="pricing-card__description">{description}</p>
-                  <ul className="pricing-card__list">
-                    {inclusions.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                  <a className="pricing-card__cta" href="#contact">
-                    Get started
-                  </a>
-                </article>
-              )
-            )}
-          </div>
-        </section>
-        */}
-
-        <section className="section section--demos" id="demos">
-          <div className="section__header" data-reveal>
-            <span className="section__eyebrow">Demos</span>
-            <h2 className="section__title">Sample conversations</h2>
-            <p className="section__subtitle">
-              Preview how our agents greet callers, nurture leads, and keep your
-              team in the loop with transcripts and alerts.
-            </p>
-          </div>
-          <div className="demo-grid">
-            {demos.map(({ title, description, length, category }) => (
-              <article className="demo-card" data-reveal key={title}>
-                <div className="demo-card__media">
-                  <span className="demo-card__badge">{category}</span>
-                  <button
-                    className="demo-card__trigger"
-                    type="button"
-                    aria-label={`Preview ${title}`}
-                  >
-                    <span className="demo-card__play">▶</span>
-                    Preview
-                  </button>
-                  <span className="demo-card__length">{length}</span>
-                </div>
-                <div className="demo-card__body">
-                  <h3>{title}</h3>
-                  <p>{description}</p>
-                  <a className="demo-card__link" href="#contact">
-                    Request full walkthrough →
-                  </a>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="section section--testimonials" id="testimonials">
-          <div className="section__header" data-reveal>
-            <span className="section__eyebrow">Testimonials</span>
-            <h2 className="section__title">Results from local teams</h2>
-            <p className="section__subtitle">
-              Hear from owners who put Aureli on the front lines of customer
-              conversations and grew without hiring more staff.
-            </p>
-          </div>
-          <div className="testimonial-grid">
-            {testimonials.map(({ quote, author, role }) => (
-              <figure className="testimonial" data-reveal key={author}>
-                <blockquote>"{quote}"</blockquote>
-                <figcaption>
-                  <span className="testimonial__author">{author}</span>
-                  <span className="testimonial__role">{role}</span>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </section>
-
-        <section className="section section--contact" id="contact">
-          <div className="contact__content" data-reveal>
-            <span className="contact__tag">Let's build together</span>
-            <h2 className="section__title">
-              Tell us about the calls or campaigns you need covered
-            </h2>
-            <p className="section__subtitle">
-              Share the conversations you want automated and we will send back a
-              tailored roadmap with next steps within two business days.
-            </p>
-            <ul className="contact__channels">
-              {contactChannels.map(({ label, detail }) => (
-                <li key={label}>
-                  {/* <span className="contact__channel-icon" aria-hidden="true">
-                    {icon}
-                  </span> */}
-                  <div>
-                    <span className="contact__channel-label">{label}</span>
-                    <strong className="contact__channel-detail">
-                      {detail}
-                    </strong>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="contact__form" data-reveal>
-            <div className="contact__scheduler-intro">
-              <span className="contact__label">Book a working session</span>
-              <p className="contact__subtitle">
-                Grab time on our calendar for a 30-minute discovery call.
-                We&apos;ll review your scripts, tooling, and automation goals
-                live.
+        {/* Hero Section */}
+        <section className="hero hero--main">
+          <div className="hero__container">
+            <div className="hero__content" data-reveal>
+              <h1 className="hero__title">
+                The first AI-Powered
+                <br />
+                Predictive Hiring Platform
+              </h1>
+              <p className="hero__subtitle">
+                Aureli's AI predicts when and how many people you need to hire—weeks before you
+                need them. Built for hiring timing decisions, workforce planning, and more.
               </p>
-              <p className="form__hint">
-                Prefer a new tab?{" "}
-                <a
-                  href="https://cal.com/aureli/discovery-call"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Open the scheduler
+              <div className="hero__actions">
+                <a className="hero__primary" href="#contact">
+                  Get Started
                 </a>
-                .
-              </p>
-            </div>
-            <div
-              className="contact__scheduler-embed"
-              aria-live="polite"
-              style={{ minHeight: "520px" }}
-            >
-              <Cal
-                namespace="30min"
-                calLink="ali-sulaiman-b2yeyp/30min"
-                style={{ width: "100%", height: "100%", overflow: "scroll" }}
-                config={{ layout: "month_view", theme: "dark" }}
-              />
+              </div>
+              <div className="hero__products">
+                {products.slice(0, 6).map((product) => (
+                  <span key={product.title} className="hero__product-tag">
+                    {product.title}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </section>
 
-        <section className="section section--faq" id="faq">
-          <div className="section__header" data-reveal>
-            <span className="section__eyebrow">FAQ</span>
-            <h2 className="section__title">Questions before you launch</h2>
-            <p className="section__subtitle">
-              Get clear on how Aureli's AI concierge works before you invest.
+        {/* Stats Bar */}
+        <section className="section section--stats-bar">
+          <div className="section__container">
+            <p className="stats-bar__text" data-reveal>
+              We've helped companies optimize hiring timing for millions of workers
             </p>
           </div>
-          <div className="faq">
-            {faqs.map(({ question, answer }) => (
-              <details className="faq__item" data-reveal key={question}>
-                <summary>{question}</summary>
-                <p>{answer}</p>
-              </details>
-            ))}
+        </section>
+
+        {/* AI Section */}
+        <section className="section section--ai">
+          <div className="section__container">
+            <div className="ai-content">
+              <div className="ai-text" data-reveal>
+                <h2 className="section__title">
+                  Predictive AI that makes smarter hiring decisions
+                </h2>
+                <p className="section__subtitle">
+                  Hiring timing is a race against demand. Shortages happen. Rush hiring costs
+                  money. Over-hiring wastes resources.
+                </p>
+                <p className="section__subtitle">
+                  <strong>Aureli is built on intelligent predictions that:</strong>
+                </p>
+                <ul className="ai-features">
+                  <li>Analyze historical patterns, turnover, and business metrics</li>
+                  <li>Share insights across your organization to make smarter decisions</li>
+                  <li>Automatically alert you when hiring needs are approaching</li>
+                </ul>
+                <a href="#features" className="ai-link">
+                  Learn more about Predictive AI at Aureli →
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* One Platform Section */}
+        <section className="section section--platform">
+          <div className="section__container">
+            <div className="platform-content" data-reveal>
+              <h2 className="section__title">
+                One platform.
+                <br />
+                Every hiring timing decision.
+              </h2>
+              <p className="section__subtitle">
+                Aureli unifies predictive hiring, workforce planning, and timing optimization in one
+                seamless platform—powered by intelligent AI and designed to plug into your existing
+                stack.
+              </p>
+              <a href="#features" className="platform-link">
+                Learn more →
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* Hiring Process Section */}
+        <section className="section section--hiring-process" id="solutions">
+          <div className="section__container">
+            <div className="hiring-process-content" data-reveal>
+              <h2 className="section__title">How predictive hiring works</h2>
+              <p className="section__subtitle">
+                Aureli analyzes your data to predict when and how many people you'll need to hire,
+                then provides actionable recommendations to optimize your hiring timing.
+              </p>
+              <Link to="/hire" className="hiring-process-link">
+                Learn more about the hiring process →
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section className="section section--features" id="features">
+          <div className="section__container">
+            <div className="section__header" data-reveal>
+              <h2 className="section__title">Smarter hiring timing with AI</h2>
+              <p className="section__subtitle">
+                Meet our AI-powered features, built to solve real hiring timing challenges—faster.
+                Whether you're predicting seasonal needs or managing growth, these solutions
+                deliver action—not just insight.
+              </p>
+            </div>
+            <div className="features-grid">
+              {products.map(({ title, description, category }) => (
+                <article className="feature-card" data-reveal key={title}>
+                  <div className="feature-card__category">{category}</div>
+                  <h3 className="feature-card__title">{title}</h3>
+                  <p className="feature-card__description">{description}</p>
+                  {title === "Predictive Hiring" && (
+                    <Link to="/hire" className="feature-card__link">
+                      Learn more →
+                    </Link>
+                  )}
+                  {title === "Referrals" && (
+                    <Link to="/referrals" className="feature-card__link">
+                      Learn more →
+                    </Link>
+                  )}
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Benefits Section */}
+        <section className="section section--benefits">
+          <div className="section__container">
+            <div className="section__header" data-reveal>
+              <h2 className="section__title">Hire at the speed of demand</h2>
+              <p className="section__subtitle">
+                Most workforce planning tools aren't built to predict hiring timing accurately.
+                Ours was designed from the ground up to help your team make smarter hiring
+                decisions:
+              </p>
+            </div>
+            <div className="benefits-grid">
+              {benefits.map((benefit, index) => (
+                <div className="benefit-item" data-reveal key={index}>
+                  <div className="benefit-item__check">✓</div>
+                  <p className="benefit-item__text">{benefit}</p>
+                </div>
+              ))}
+            </div>
+            <div className="benefits-cta" data-reveal>
+              <a href="#contact" className="benefits-link">
+                Start optimizing hiring timing →
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* Partner Section */}
+        <section className="section section--partner">
+          <div className="section__container">
+            <div className="partner-content" data-reveal>
+              <h2 className="section__title">
+                More than software.
+                <br />
+                A partner too.
+              </h2>
+              <p className="section__subtitle">
+                We partner with customers to develop new features and capabilities—launching
+                regularly! Your needs guide us, and our experience guides you. Want in? Join our
+                early access program!
+              </p>
+              <div className="partner-features">
+                <div className="partner-feature">
+                  <h3 className="partner-feature__title">Tailored features</h3>
+                  <p className="partner-feature__description">
+                    Our design, product, and engineering teams customize functions to your input.
+                  </p>
+                </div>
+                <div className="partner-feature">
+                  <h3 className="partner-feature__title">Early access</h3>
+                  <p className="partner-feature__description">
+                    Get advanced access to our latest features and products.
+                  </p>
+                </div>
+                <div className="partner-feature">
+                  <h3 className="partner-feature__title">Free beta use</h3>
+                  <p className="partner-feature__description">
+                    Enjoy new products completely free while they're in the beta stage.
+                  </p>
+                </div>
+                <div className="partner-feature">
+                  <h3 className="partner-feature__title">Discounted pricing</h3>
+                  <p className="partner-feature__description">
+                    Access preferential pricing once products exit beta.
+                  </p>
+                </div>
+              </div>
+              <div className="partner-cta" data-reveal>
+                <a href="#contact" className="partner-link">
+                  Join Now →
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Experience Section */}
+        <section className="section section--experience">
+          <div className="section__container">
+            <div className="section__header" data-reveal>
+              <h2 className="section__title">
+                Take hiring timing decisions to new heights
+              </h2>
+              <p className="section__subtitle">
+                From workforce planning to execution. Aureli elevates hiring timing, workforce
+                planning, and retention at scale.
+              </p>
+            </div>
+            <div className="experience-grid">
+              <article className="experience-card" data-reveal>
+                <h3 className="experience-card__title">Predictive Hiring</h3>
+                <p className="experience-card__description">
+                  Know when and how many people you need to hire—weeks in advance. AI analyzes your
+                  data to provide accurate forecasts.
+                </p>
+              </article>
+              <article className="experience-card" data-reveal>
+                <h3 className="experience-card__title">Workforce Planning</h3>
+                <p className="experience-card__description">
+                  Forecast staffing needs based on business metrics, seasonal trends, and turnover
+                  patterns.
+                </p>
+              </article>
+              <article className="experience-card" data-reveal>
+                <h3 className="experience-card__title">Timing Optimization</h3>
+                <p className="experience-card__description">
+                  AI recommends the optimal time to start recruiting for each role, reducing costs
+                  and improving retention.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials Section */}
+        <section className="section section--testimonials">
+          <div className="section__container">
+            <div className="testimonials-carousel">
+              {testimonials.map(({ quote, author, role, company, metric, metricLabel }) => (
+                <article className="testimonial-large" data-reveal key={author}>
+                  <div className="testimonial-large__content">
+                    <blockquote className="testimonial-large__quote">"{quote}"</blockquote>
+                    <div className="testimonial-large__author">
+                      <div className="testimonial-large__avatar"></div>
+                      <div>
+                        <div className="testimonial-large__name">{author}</div>
+                        <div className="testimonial-large__role">
+                          {role}, {company}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="testimonial-large__metric">
+                    <div className="testimonial-large__metric-value">{metric}</div>
+                    <div className="testimonial-large__metric-label">{metricLabel}</div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Industries Section */}
+        <section className="section section--industries">
+          <div className="section__container">
+            <div className="section__header" data-reveal>
+              <h2 className="section__title">Purpose-built for...</h2>
+            </div>
+            <div className="industries-grid">
+              {industries.map((industry) => (
+                <div className="industry-tag" data-reveal key={industry}>
+                  {industry}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="section section--cta" id="contact">
+          <div className="section__container">
+            <div className="cta-content-wrapper" data-reveal>
+              <h2 className="cta__title">Ready to optimize your hiring timing?</h2>
+              <p className="cta__subtitle">Get started today and see how Aureli can transform your hiring decisions.</p>
+            </div>
+            <div className="cta-form-wrapper" data-reveal>
+              <div className="scheduler-intro">
+                <h3 className="scheduler-intro__title">Schedule a Demo</h3>
+                <p className="scheduler-intro__description">
+                  Book a personalized demo with our team. We'll show you how Aureli can predict
+                  your hiring needs and optimize your timing decisions.
+                </p>
+              </div>
+              <div className="scheduler-embed" aria-live="polite" style={{ minHeight: "520px" }}>
+                <Cal
+                  namespace="30min"
+                  calLink="ali-sulaiman-b2yeyp/30min"
+                  style={{ width: "100%", height: "100%", overflow: "scroll" }}
+                  config={{ layout: "month_view", theme: "light" }}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section className="section section--faq" id="faq">
+          <div className="section__container">
+            <div className="section__header" data-reveal>
+              <h2 className="section__title">Frequently asked questions</h2>
+            </div>
+            <div className="faq-list">
+              {faqs.map(({ question, answer }) => (
+                <details className="faq-item" data-reveal key={question}>
+                  <summary className="faq-item__question">{question}</summary>
+                  <p className="faq-item__answer">{answer}</p>
+                </details>
+              ))}
+            </div>
+            <div className="faq-cta" data-reveal>
+              <p className="faq-cta__text">
+                Have questions about the hiring process?{" "}
+                <Link to="/hire" className="faq-cta__link">
+                  Visit our Hire page for detailed FAQs →
+                </Link>
+              </p>
+            </div>
           </div>
         </section>
       </main>
 
       <footer className="footer">
-        <div className="footer__content">
+        <div className="footer__container">
           <div className="footer__brand">
             <span className="footer__logo">Aureli</span>
-            <p className="footer__tagline">
-              AI automation for local businesses
-            </p>
+            <p className="footer__tagline">Predictive Hiring Intelligence</p>
           </div>
-          <nav className="footer__links" aria-label="Footer navigation">
-            {navLinks.map(({ label, href }) => (
-              <a key={label} href={href}>
-                {label}
-              </a>
-            ))}
-            <a href="#contact">Contact</a>
+          <nav className="footer__nav" aria-label="Footer navigation">
+            <div className="footer__column">
+              <h4 className="footer__heading">Product</h4>
+              <Link to="/hire">Hire</Link>
+              <a href="#features">Features</a>
+              <a href="#solutions">Solutions</a>
+              <a href="#faq">FAQ</a>
+            </div>
+            <div className="footer__column">
+              <h4 className="footer__heading">Company</h4>
+              <a href="#company">About</a>
+              <a href="#contact">Contact</a>
+              <a href="#resources">Resources</a>
+            </div>
+            <div className="footer__column">
+              <h4 className="footer__heading">Legal</h4>
+              <a href="#">Privacy</a>
+              <a href="#">Terms</a>
+              <a href="#">Security</a>
+            </div>
           </nav>
         </div>
         <div className="footer__bottom">
-          <p>
-            &copy; {currentYear} Aureli Automation Labs. All rights reserved.
-          </p>
+          <p>&copy; {currentYear} Aureli. All rights reserved.</p>
         </div>
       </footer>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/hire" element={<Hire />} />
+        <Route path="/referrals" element={<Referrals />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
