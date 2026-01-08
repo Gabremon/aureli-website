@@ -7,6 +7,9 @@ export default function Header() {
     { label: "Home", path: "/" },
     { label: "Hire", path: "/hire" },
     { label: "Referrals", path: "/referrals" },
+    { label: "I-9 Center", path: "/i9-center" },
+    { label: "Onboard", path: "/onboard" },
+    { label: "Compliance", path: "/compliance" },
   ];
 
   return (

@@ -309,6 +309,11 @@ export default function Hire() {
           <nav className="footer__nav" aria-label="Footer navigation">
             <div className="footer__column">
               <h4 className="footer__heading">Product</h4>
+              <Link to="/hire">Hire</Link>
+              <Link to="/referrals">Referrals</Link>
+              <Link to="/i9-center">I-9 Center</Link>
+              <Link to="/onboard">Onboard</Link>
+              <Link to="/compliance">Compliance</Link>
               <a href="#how-it-works">How It Works</a>
               <a href="#faq">FAQ</a>
             </div>

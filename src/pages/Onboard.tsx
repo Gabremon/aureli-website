@@ -4,121 +4,121 @@ import { useEffect, useMemo } from "react";
 import "../styles/App.css";
 import Header from "../components/Header";
 
-const whyReferrals = [
+const whyOnboard = [
   {
-    title: "High-retention hires",
-    description: "from trusted sources",
+    title: "Mobile-first experience",
+    description: "built for hourly workers",
   },
   {
-    title: "Fewer steps",
-    description: "faster conversions",
+    title: "Easy task completion",
+    description: "document collection, and signature capture",
   },
   {
-    title: "Easy mobile experience",
-    description: "for employees and candidates",
+    title: "Clear visibility",
+    description: "into onboarding progress and completion",
   },
   {
-    title: "Automated from end to end",
-    description: "no manual tracking",
+    title: "Smart rules",
+    description: "ensure compliance by location, role, and worker type",
   },
 ];
 
 const capabilities = [
-  "Reduce no-show rates and early turnover",
-  "Cut sourcing spend without losing quality",
-  "Eliminate manual work with auto-tracking and reporting",
-  "Incentivize effectively with flexible reward settings",
-  "Reach frontline workers through SMS and mobile workflows",
-  "Measure impact with real-time data",
+  "Collect forms, IDs, and signatures digitally",
+  "Assign onboarding tasks based on job or location",
+  "Let new hires complete tasks in their preferred language",
+  "Track progress and send reminders automatically",
+  "Use audit logs and completion reports for compliance",
+  "Reduce time-to-productivity and turnover risk",
 ];
 
 const features = [
   {
-    title: "Mobile-first",
-    description: "referral experience for on-the-go workers",
+    title: "Seamless handoff",
+    description: "from hiring to onboarding",
   },
   {
-    title: "Refer via text",
-    description: "using auto-generated links and QR codes with no app required",
+    title: "Mobile-first design",
+    description: "works for every worker",
   },
   {
-    title: "Real-time",
-    description: "referral tracking and engagement insights",
+    title: "Rules-based workflows",
+    description: "for different job types and locations",
   },
   {
-    title: "Configurable reward settings",
-    description: "based on hire status",
+    title: "Automated document tracking",
+    description: "and task reminders",
   },
   {
-    title: "Easy campaign creation",
-    description: "for recruiters and managers",
+    title: "Integration",
+    description: "with background checks and e-signature tools",
   },
   {
-    title: "Fully integrated",
-    description: "with your hiring workflows in Aureli",
+    title: "Corporate visibility",
+    description: "with real-time dashboards and reports",
   },
 ];
 
 const useCases = [
   {
-    title: "Launch referral campaigns",
-    description: "for peak season hiring",
+    title: "Warehouses needing to quickly onboard",
+    description: "seasonal hires",
   },
   {
-    title: "Target hard-to-fill roles",
-    description: "with focused incentive programs",
+    title: "Restaurants standardizing onboarding",
+    description: "across franchises",
   },
   {
-    title: "Engage and reward",
-    description: "your top-performing employees",
+    title: "Retail brands improving compliance",
+    description: "and training visibility",
   },
 ];
 
 const howItWorks = [
   {
     step: "1",
-    title: "Share open roles",
+    title: "Automatic enrollment",
     description:
-      "Employees instantly share open roles with their networks via text, QR code, or a mobile-friendly page.",
+      "New hires are automatically enrolled into onboarding once they accept an offer. From there, they complete forms, upload documents, and get job-ready all from their phone.",
   },
   {
     step: "2",
-    title: "Track every step",
+    title: "Customize workflows",
     description:
-      "Aureli Referrals tracks every step, from referral sent to hired, and keeps your team informed.",
+      "Your team can customize tasks and workflows for each location or role, ensuring every new hire gets the right onboarding experience.",
   },
   {
     step: "3",
-    title: "Get results",
+    title: "Stay on top of everything",
     description:
-      "No spreadsheets, no follow-ups. Just results. Fill roles faster with people your team already trusts.",
+      "Track progress with live dashboards, automated reminders, and real-time visibility into completion status. No manual follow-up needed.",
   },
 ];
 
 const faqs = [
   {
-    question: "How do employees share referrals?",
+    question: "How does mobile-first onboarding work?",
     answer:
-      "Employees can share open roles instantly via text message, QR code, or a mobile-friendly referral page. No app download required—just click and share.",
+      "New hires can complete their entire onboarding process from their mobile device. They receive tasks, upload documents, sign forms, and track their progress—all from their phone. The interface is designed specifically for hourly workers who may not have access to a computer.",
   },
   {
-    question: "How are referrals tracked?",
+    question: "Can I customize onboarding workflows for different roles?",
     answer:
-      "Aureli Referrals automatically tracks every referral from the moment it's sent through to hire. You get real-time insights into referral status, engagement, and conversion rates—no manual tracking needed.",
+      "Yes, Aureli Onboard allows you to create rules-based workflows for different job types, locations, and worker categories. Each workflow can have its own set of tasks, documents, and compliance requirements.",
   },
   {
-    question: "Can I customize reward settings?",
+    question: "How does it integrate with the hiring process?",
     answer:
-      "Yes, you can configure reward settings based on hire status, role type, or other criteria. Set different incentives for different campaigns and roles.",
+      "Aureli Onboard seamlessly connects with your hiring workflow. Once a candidate accepts an offer, they're automatically enrolled in onboarding. The system can also integrate with background checks, e-signature tools, and your ATS.",
   },
   {
-    question: "Does it integrate with my existing hiring tools?",
+    question: "What kind of visibility do I get?",
     answer:
-      "Aureli Referrals integrates seamlessly with your hiring workflows in Aureli and can connect with your existing HRIS and ATS systems.",
+      "You get real-time dashboards showing onboarding progress across all new hires, completion rates, pending tasks, and compliance status. Automated reminders help keep things moving, and audit logs ensure you're always ready for compliance reviews.",
   },
 ];
 
-export default function Referrals() {
+export default function Onboard() {
   const currentYear = useMemo(() => new Date().getFullYear(), []);
 
   useEffect(() => {
@@ -162,17 +162,17 @@ export default function Referrals() {
 
       <main>
         {/* Hero Section */}
-        <section className="hero hero--referrals">
+        <section className="hero hero--onboard">
           <div className="hero__container">
             <div className="hero__content" data-reveal>
               <div className="hero__badge">Coming Soon</div>
               <h1 className="hero__title">
-                Fast, high-quality hires from the people who know your business best
+                Get new hires to day one 2x faster with fewer errors
               </h1>
               <p className="hero__subtitle">
-                Turn employees into your #1 source of high-quality hires. Aureli Referrals taps into
-                the power of your existing workforce by automating referral campaigns to fill open
-                roles faster with trusted candidates who stay longer.
+                Gets new employees ready to work faster and keeps your team compliant every step of the
+                way. Make a great first impression, reduce errors, and get ahead of Day 1 chaos with a
+                fully digital, mobile-ready onboarding experience.
               </p>
               <div className="hero__actions">
                 <a className="hero__primary" href="#contact">
@@ -186,60 +186,54 @@ export default function Referrals() {
           </div>
         </section>
 
-        {/* Why Referrals Section */}
-        <section className="section section--why-referrals">
+        {/* Why Onboard Section */}
+        <section className="section section--why-onboard">
           <div className="section__container">
             <div className="section__header" data-reveal>
-              <h2 className="section__title">Why Aureli Referrals?</h2>
+              <h2 className="section__title">Why Aureli Onboard?</h2>
               <p className="section__subtitle">
-                Aureli Referrals taps into the power of your existing workforce by automating referral
-                campaigns to fill open roles faster with trusted candidates who stay longer.
+                Make a great first impression, reduce errors, and get ahead of Day 1 chaos with a fully
+                digital, mobile-ready onboarding experience.
               </p>
             </div>
-            <div className="why-referrals-grid">
-              {whyReferrals.map(({ title, description }) => (
-                <article className="why-referral-card" data-reveal key={title}>
-                  <h3 className="why-referral-card__title">{title}</h3>
-                  <p className="why-referral-card__description">{description}</p>
+            <div className="why-onboard-grid">
+              {whyOnboard.map(({ title, description }) => (
+                <article className="why-onboard-card" data-reveal key={title}>
+                  <h3 className="why-onboard-card__title">{title}</h3>
+                  <p className="why-onboard-card__description">{description}</p>
                 </article>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Built-In Referrals Section */}
-        <section className="section section--built-in">
+        {/* Faster Starts Section */}
+        <section className="section section--faster-starts">
           <div className="section__container">
-            <div className="built-in-content" data-reveal>
-              <h2 className="section__title">Built-In Referrals That Actually Deliver</h2>
+            <div className="faster-starts-content" data-reveal>
+              <h2 className="section__title">Faster, Smarter Starts for New Hires</h2>
               <p className="section__subtitle">
-                Aureli Referrals tracks every referral, targets the right roles, and keeps employees
-                engaged. Launch campaigns that scale, and fill roles faster with people your team
-                already trusts.
+                Aureli Onboard keeps new hires moving. It nudges candidates to complete steps, surfaces
+                bottlenecks, and gets people to day one faster—without manual follow-up.
               </p>
-              <a href="#features" className="built-in-link">
-                Learn More →
+              <a href="#features" className="faster-starts-link">
+                Learn more →
               </a>
             </div>
           </div>
         </section>
 
-        {/* Benefits Section */}
-        <section className="section section--benefits-referrals">
+        {/* Fast Flexible Section */}
+        <section className="section section--fast-flexible">
           <div className="section__container">
-            <div className="benefits-referrals-content" data-reveal>
-              <h2 className="section__title">
-                Referred workers stay longer, show up faster
-              </h2>
+            <div className="fast-flexible-content" data-reveal>
+              <h2 className="section__title">Fast, flexible, and fully digital</h2>
               <p className="section__subtitle">
-                Referrals isn't just another hiring channel. It's the one that works. Aureli Referrals
-                turns your employees into your best recruiters with fast, simple tools that make it easy
-                to send and track referrals from any device. You'll spend less on sourcing and fill
-                roles with candidates who are already a cultural fit.
+                When you're hiring at volume, paper packets and email checklists just won't cut it.
+                Aureli Onboard turns a messy manual process into a smooth experience for new hires and
+                your team alike. Let them complete onboarding from their phone, while you track
+                everything in one place.
               </p>
-              <a href="#how-it-works" className="benefits-referrals-link">
-                See it in action →
-              </a>
             </div>
           </div>
         </section>
@@ -248,7 +242,7 @@ export default function Referrals() {
         <section className="section section--capabilities" id="features">
           <div className="section__container">
             <div className="section__header" data-reveal>
-              <h2 className="section__title">What you can do with Aureli Referrals</h2>
+              <h2 className="section__title">What you can do with Aureli Onboard</h2>
             </div>
             <div className="capabilities-grid">
               {capabilities.map((capability, index) => (
@@ -262,50 +256,48 @@ export default function Referrals() {
         </section>
 
         {/* Features Grid */}
-        <section className="section section--features-referrals">
+        <section className="section section--features-onboard">
           <div className="section__container">
             <div className="section__header" data-reveal>
-              <h2 className="section__title">Built for high-volume, hourly referrals</h2>
+              <h2 className="section__title">Why teams choose Aureli Onboard</h2>
             </div>
-            <div className="features-referrals-grid">
+            <div className="features-onboard-grid">
               {features.map(({ title, description }) => (
-                <article className="feature-referral-card" data-reveal key={title}>
-                  <h3 className="feature-referral-card__title">{title}</h3>
-                  <p className="feature-referral-card__description">{description}</p>
+                <article className="feature-onboard-card" data-reveal key={title}>
+                  <h3 className="feature-onboard-card__title">{title}</h3>
+                  <p className="feature-onboard-card__description">{description}</p>
                 </article>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Stats Section - Adapted for startup */}
-        <section className="section section--stats-referrals">
+        {/* Stats Section */}
+        <section className="section section--stats-onboard">
           <div className="section__container">
             <div className="section__header" data-reveal>
-              <h2 className="section__title">
-                More hires, higher retention—driven by your team
-              </h2>
+              <h2 className="section__title">Fewer errors. Faster first days.</h2>
               <p className="section__subtitle">
-                Referral programs typically deliver better results than traditional hiring channels.
+                Digital onboarding typically delivers significant improvements in speed and compliance.
               </p>
             </div>
-            <div className="stats-referrals-grid">
-              <div className="stat-referral-item" data-reveal>
-                <div className="stat-referral-item__value">25%</div>
-                <div className="stat-referral-item__label">reduction in time-to-hire</div>
+            <div className="stats-onboard-grid">
+              <div className="stat-onboard-item" data-reveal>
+                <div className="stat-onboard-item__value">40%</div>
+                <div className="stat-onboard-item__label">faster onboarding completion</div>
               </div>
-              <div className="stat-referral-item" data-reveal>
-                <div className="stat-referral-item__value">40%</div>
-                <div className="stat-referral-item__label">increase in applicant quality</div>
+              <div className="stat-onboard-item" data-reveal>
+                <div className="stat-onboard-item__value">30%</div>
+                <div className="stat-onboard-item__label">reduction in Day 1 no-shows</div>
               </div>
-              <div className="stat-referral-item" data-reveal>
-                <div className="stat-referral-item__value">2x</div>
-                <div className="stat-referral-item__label">improvement in retention after 90 days</div>
+              <div className="stat-onboard-item" data-reveal>
+                <div className="stat-onboard-item__value">2x</div>
+                <div className="stat-onboard-item__label">improvement in compliance task completion rates</div>
               </div>
             </div>
             <div className="stats-note" data-reveal>
               <p className="stats-note__text">
-                *Industry benchmarks for referral programs. Results may vary.
+                *Industry benchmarks for digital onboarding. Results may vary.
               </p>
             </div>
           </div>
@@ -316,7 +308,7 @@ export default function Referrals() {
           <div className="section__container">
             <div className="section__header" data-reveal>
               <h2 className="section__title">
-                Where Aureli Referrals drive better, faster hires
+                Where Aureli Onboard improves speed and compliance
               </h2>
             </div>
             <div className="use-cases-grid">
@@ -336,28 +328,28 @@ export default function Referrals() {
         </section>
 
         {/* How It Works */}
-        <section className="section section--how-referrals" id="how-it-works">
+        <section className="section section--how-onboard" id="how-it-works">
           <div className="section__container">
             <div className="section__header" data-reveal>
               <h2 className="section__title">How it works</h2>
               <p className="section__subtitle">
-                With Aureli Referrals, employees can instantly share open roles with their networks via
-                text, QR code, or a mobile-friendly page. Aureli Referrals tracks every step, from
-                referral sent to hired, and keeps your team informed. No spreadsheets, no follow-ups.
-                Just results.
+                New hires are automatically enrolled into onboarding once they accept an offer. From
+                there, they complete forms, upload documents, and get job-ready all from their phone.
+                Your team can customize tasks and workflows for each location or role, and stay on top
+                of everything with live dashboards.
               </p>
             </div>
-            <div className="how-referrals-grid">
+            <div className="how-onboard-grid">
               {howItWorks.map(({ step, title, description }) => (
-                <article className="how-referral-card" data-reveal key={step}>
-                  <div className="how-referral-card__step">{step}</div>
-                  <h3 className="how-referral-card__title">{title}</h3>
-                  <p className="how-referral-card__description">{description}</p>
+                <article className="how-onboard-card" data-reveal key={step}>
+                  <div className="how-onboard-card__step">{step}</div>
+                  <h3 className="how-onboard-card__title">{title}</h3>
+                  <p className="how-onboard-card__description">{description}</p>
                 </article>
               ))}
             </div>
-            <div className="how-referrals-cta" data-reveal>
-              <a href="#contact" className="how-referrals-link">
+            <div className="how-onboard-cta" data-reveal>
+              <a href="#contact" className="how-onboard-link">
                 Book a demo →
               </a>
             </div>
@@ -368,18 +360,20 @@ export default function Referrals() {
         <section className="section section--cta" id="contact">
           <div className="section__container">
             <div className="cta-content-wrapper" data-reveal>
-              <h2 className="cta__title">Launch your referral program today</h2>
+              <h2 className="cta__title">
+                See how Aureli Onboard saves time, reduces errors, and gets your new hires ready faster.
+                Book a demo today.
+              </h2>
               <p className="cta__subtitle">
-                Get early access to Aureli Referrals and start turning your employees into your best
-                recruiters.
+                Get early access to Aureli Onboard and transform your onboarding process.
               </p>
             </div>
             <div className="cta-form-wrapper" data-reveal>
               <div className="scheduler-intro">
                 <h3 className="scheduler-intro__title">Schedule a Demo</h3>
                 <p className="scheduler-intro__description">
-                  Book a personalized demo with our team. We'll show you how Aureli Referrals can
-                  transform your hiring process.
+                  Book a personalized demo with our team. We'll show you how Aureli Onboard can
+                  transform your onboarding process.
                 </p>
               </div>
               <div className="scheduler-embed" aria-live="polite" style={{ minHeight: "520px" }}>

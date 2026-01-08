@@ -5,6 +5,9 @@ import "./styles/App.css";
 import Header from "./components/Header";
 import Hire from "./pages/Hire";
 import Referrals from "./pages/Referrals";
+import I9Center from "./pages/I9Center";
+import Onboard from "./pages/Onboard";
+import Compliance from "./pages/Compliance";
 
 const products = [
   {
@@ -51,6 +54,21 @@ const products = [
     title: "Referrals",
     description: "Turn employees into your #1 source of high-quality hires with automated referral campaigns",
     category: "Core",
+  },
+  {
+    title: "I-9 Center",
+    description: "Fast, compliant I-9s without the friction. Complete I-9s in minutes with audit-ready workflows",
+    category: "Compliance",
+  },
+  {
+    title: "Onboard",
+    description: "Get new hires to day one 2x faster with fewer errors. Mobile-first onboarding for hourly workers",
+    category: "Talent Management",
+  },
+  {
+    title: "Compliance",
+    description: "Stay compliant without slowing hiring. Automated document checks and guardrails for high-volume teams",
+    category: "Compliance",
   },
 ];
 
@@ -286,6 +304,21 @@ function HomePage() {
                       Learn more →
                     </Link>
                   )}
+                  {title === "I-9 Center" && (
+                    <Link to="/i9-center" className="feature-card__link">
+                      Learn more →
+                    </Link>
+                  )}
+                  {title === "Onboard" && (
+                    <Link to="/onboard" className="feature-card__link">
+                      Learn more →
+                    </Link>
+                  )}
+                  {title === "Compliance" && (
+                    <Link to="/compliance" className="feature-card__link">
+                      Learn more →
+                    </Link>
+                  )}
                 </article>
               ))}
             </div>
@@ -513,6 +546,10 @@ function HomePage() {
             <div className="footer__column">
               <h4 className="footer__heading">Product</h4>
               <Link to="/hire">Hire</Link>
+              <Link to="/referrals">Referrals</Link>
+              <Link to="/i9-center">I-9 Center</Link>
+              <Link to="/onboard">Onboard</Link>
+              <Link to="/compliance">Compliance</Link>
               <a href="#features">Features</a>
               <a href="#solutions">Solutions</a>
               <a href="#faq">FAQ</a>
@@ -546,6 +583,9 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/hire" element={<Hire />} />
         <Route path="/referrals" element={<Referrals />} />
+        <Route path="/i9-center" element={<I9Center />} />
+        <Route path="/onboard" element={<Onboard />} />
+        <Route path="/compliance" element={<Compliance />} />
       </Routes>
     </BrowserRouter>
   );

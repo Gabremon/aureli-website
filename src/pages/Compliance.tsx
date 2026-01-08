@@ -4,121 +4,123 @@ import { useEffect, useMemo } from "react";
 import "../styles/App.css";
 import Header from "../components/Header";
 
-const whyReferrals = [
+const whyCompliance = [
   {
-    title: "High-retention hires",
-    description: "from trusted sources",
+    title: "Avoid legal risk",
+    description: "and always be audit-ready",
   },
   {
-    title: "Fewer steps",
-    description: "faster conversions",
+    title: "Automate document checks",
+    description: "with trigger-based workflows",
   },
   {
-    title: "Easy mobile experience",
-    description: "for employees and candidates",
+    title: "Apply the same rules",
+    description: "across every location and role",
   },
   {
-    title: "Automated from end to end",
-    description: "no manual tracking",
+    title: "Cut down manual review time",
+    description: "with instant external validation",
   },
 ];
 
 const capabilities = [
-  "Reduce no-show rates and early turnover",
-  "Cut sourcing spend without losing quality",
-  "Eliminate manual work with auto-tracking and reporting",
-  "Incentivize effectively with flexible reward settings",
-  "Reach frontline workers through SMS and mobile workflows",
-  "Measure impact with real-time data",
+  "Automate collection of IDs, licenses, and credentials",
+  "Flag missing or incorrect documentation in real time",
+  "Set custom rules by region, role, or worker type",
+  "Get proactive alerts before compliance issues impact your business",
+  "Secure, mobile-friendly uploads for workers",
+  "Full audit trail and reporting tools",
 ];
 
 const features = [
   {
-    title: "Mobile-first",
-    description: "referral experience for on-the-go workers",
-  },
-  {
-    title: "Refer via text",
-    description: "using auto-generated links and QR codes with no app required",
+    title: "Built for",
+    description: "hourly hiring workflows",
   },
   {
     title: "Real-time",
-    description: "referral tracking and engagement insights",
+    description: "document validation and alerts",
   },
   {
-    title: "Configurable reward settings",
-    description: "based on hire status",
+    title: "Role-based",
+    description: "and geo-specific rule configuration",
   },
   {
-    title: "Easy campaign creation",
-    description: "for recruiters and managers",
+    title: "Mobile-first",
+    description: "interface for document upload",
   },
   {
-    title: "Fully integrated",
-    description: "with your hiring workflows in Aureli",
+    title: "Detailed audit logs",
+    description: "and exportable reports",
+  },
+  {
+    title: "Agentic AI",
+    description: "that catches errors and suggests corrections",
   },
 ];
 
 const useCases = [
   {
-    title: "Launch referral campaigns",
-    description: "for peak season hiring",
+    title: "Companies managing different labor laws",
+    description: "by state or region",
   },
   {
-    title: "Target hard-to-fill roles",
-    description: "with focused incentive programs",
+    title: "Roles that require credentials",
+    description: "licenses, or certifications",
   },
   {
-    title: "Engage and reward",
-    description: "your top-performing employees",
+    title: "Organizations enforcing internal policy",
+    description: "compliance by role or brand",
   },
 ];
 
 const howItWorks = [
   {
     step: "1",
-    title: "Share open roles",
-    description:
-      "Employees instantly share open roles with their networks via text, QR code, or a mobile-friendly page.",
+    title: "Worker uploads document",
+    description: "Workers upload required documents through a mobile-friendly interface.",
   },
   {
     step: "2",
-    title: "Track every step",
-    description:
-      "Aureli Referrals tracks every step, from referral sent to hired, and keeps your team informed.",
+    title: "Trigger fires automatically",
+    description: "The system automatically detects document uploads and triggers compliance checks.",
   },
   {
     step: "3",
-    title: "Get results",
-    description:
-      "No spreadsheets, no follow-ups. Just results. Fill roles faster with people your team already trusts.",
+    title: "External processing",
+    description: "Documents are sent to your system or vendor for validation and verification.",
+  },
+  {
+    step: "4",
+    title: "Instant approval or flag",
+    description: "Get instant approval, flag issues, or trigger next steps based on validation results.",
   },
 ];
 
 const faqs = [
   {
-    question: "How do employees share referrals?",
+    question: "How does automated compliance checking work?",
     answer:
-      "Employees can share open roles instantly via text message, QR code, or a mobile-friendly referral page. No app download required—just click and share.",
+      "Aureli Compliance automatically validates documents as they're uploaded. The system checks for completeness, expiration dates, and required information. Custom rules can be set by role, location, or worker type, and the system flags issues in real-time before they become problems.",
   },
   {
-    question: "How are referrals tracked?",
+    question: "Can I set different compliance rules for different locations?",
     answer:
-      "Aureli Referrals automatically tracks every referral from the moment it's sent through to hire. You get real-time insights into referral status, engagement, and conversion rates—no manual tracking needed.",
+      "Yes, Aureli Compliance allows you to configure role-based and geo-specific rules. You can set different requirements for different states, regions, job types, or even specific locations. The system automatically applies the right rules to each hire.",
   },
   {
-    question: "Can I customize reward settings?",
+    question: "What kind of documents can be validated?",
     answer:
-      "Yes, you can configure reward settings based on hire status, role type, or other criteria. Set different incentives for different campaigns and roles.",
+      "Aureli Compliance can validate IDs, licenses, certifications, credentials, and other required documents. The system integrates with external validation services and can check expiration dates, authenticity, and completeness. You can also set custom validation rules for company-specific requirements.",
   },
   {
-    question: "Does it integrate with my existing hiring tools?",
+    question: "How does it help with audits?",
     answer:
-      "Aureli Referrals integrates seamlessly with your hiring workflows in Aureli and can connect with your existing HRIS and ATS systems.",
+      "Aureli Compliance maintains a complete audit trail of all document uploads, validations, and compliance checks. You get detailed logs and exportable reports that show exactly what was checked, when, and by whom. This ensures you're always audit-ready without manual documentation.",
   },
 ];
 
-export default function Referrals() {
+export default function Compliance() {
   const currentYear = useMemo(() => new Date().getFullYear(), []);
 
   useEffect(() => {
@@ -162,17 +164,17 @@ export default function Referrals() {
 
       <main>
         {/* Hero Section */}
-        <section className="hero hero--referrals">
+        <section className="hero hero--compliance">
           <div className="hero__container">
             <div className="hero__content" data-reveal>
               <div className="hero__badge">Coming Soon</div>
               <h1 className="hero__title">
-                Fast, high-quality hires from the people who know your business best
+                Stay compliant without slowing hiring
               </h1>
               <p className="hero__subtitle">
-                Turn employees into your #1 source of high-quality hires. Aureli Referrals taps into
-                the power of your existing workforce by automating referral campaigns to fill open
-                roles faster with trusted candidates who stay longer.
+                Keep every hire on track with guardrails, instant checks, and workflows that start the
+                moment a document is uploaded. Hiring at scale comes with compliance risk. Aureli
+                Compliance keeps you protected without creating bottlenecks.
               </p>
               <div className="hero__actions">
                 <a className="hero__primary" href="#contact">
@@ -186,60 +188,55 @@ export default function Referrals() {
           </div>
         </section>
 
-        {/* Why Referrals Section */}
-        <section className="section section--why-referrals">
+        {/* Why Compliance Section */}
+        <section className="section section--why-compliance">
           <div className="section__container">
             <div className="section__header" data-reveal>
-              <h2 className="section__title">Why Aureli Referrals?</h2>
+              <h2 className="section__title">Why Aureli Compliance?</h2>
               <p className="section__subtitle">
-                Aureli Referrals taps into the power of your existing workforce by automating referral
-                campaigns to fill open roles faster with trusted candidates who stay longer.
+                Hiring at scale comes with compliance risk. Aureli Compliance keeps you protected without
+                creating bottlenecks. Built for high-volume teams, it ensures every hire meets your
+                standards, every time.
               </p>
             </div>
-            <div className="why-referrals-grid">
-              {whyReferrals.map(({ title, description }) => (
-                <article className="why-referral-card" data-reveal key={title}>
-                  <h3 className="why-referral-card__title">{title}</h3>
-                  <p className="why-referral-card__description">{description}</p>
+            <div className="why-compliance-grid">
+              {whyCompliance.map(({ title, description }) => (
+                <article className="why-compliance-card" data-reveal key={title}>
+                  <h3 className="why-compliance-card__title">{title}</h3>
+                  <p className="why-compliance-card__description">{description}</p>
                 </article>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Built-In Referrals Section */}
-        <section className="section section--built-in">
+        {/* Smart Guardrails Section */}
+        <section className="section section--guardrails">
           <div className="section__container">
-            <div className="built-in-content" data-reveal>
-              <h2 className="section__title">Built-In Referrals That Actually Deliver</h2>
+            <div className="guardrails-content" data-reveal>
+              <h2 className="section__title">Smart Guardrails for Confident Hiring</h2>
               <p className="section__subtitle">
-                Aureli Referrals tracks every referral, targets the right roles, and keeps employees
-                engaged. Launch campaigns that scale, and fill roles faster with people your team
-                already trusts.
+                Aureli Compliance applies the right rules to every role. It flags issues, checks
+                documentation, and helps teams stay audit-ready without slowing down hiring.
               </p>
-              <a href="#features" className="built-in-link">
-                Learn More →
+              <a href="#features" className="guardrails-link">
+                Learn more →
               </a>
             </div>
           </div>
         </section>
 
-        {/* Benefits Section */}
-        <section className="section section--benefits-referrals">
+        {/* Compliance Speed Section */}
+        <section className="section section--compliance-speed">
           <div className="section__container">
-            <div className="benefits-referrals-content" data-reveal>
-              <h2 className="section__title">
-                Referred workers stay longer, show up faster
-              </h2>
+            <div className="compliance-speed-content" data-reveal>
+              <h2 className="section__title">Compliance shouldn't slow you down</h2>
               <p className="section__subtitle">
-                Referrals isn't just another hiring channel. It's the one that works. Aureli Referrals
-                turns your employees into your best recruiters with fast, simple tools that make it easy
-                to send and track referrals from any device. You'll spend less on sourcing and fill
-                roles with candidates who are already a cultural fit.
+                Staying compliant is hard when you're hiring fast, across locations, and at scale. Aureli
+                Compliance removes the friction by embedding smart checks into your hiring flow. From
+                document capture to company-specific rules, we help you move quickly without missing a
+                step.
               </p>
-              <a href="#how-it-works" className="benefits-referrals-link">
-                See it in action →
-              </a>
             </div>
           </div>
         </section>
@@ -248,7 +245,7 @@ export default function Referrals() {
         <section className="section section--capabilities" id="features">
           <div className="section__container">
             <div className="section__header" data-reveal>
-              <h2 className="section__title">What you can do with Aureli Referrals</h2>
+              <h2 className="section__title">What you can do with Aureli Compliance</h2>
             </div>
             <div className="capabilities-grid">
               {capabilities.map((capability, index) => (
@@ -262,50 +259,48 @@ export default function Referrals() {
         </section>
 
         {/* Features Grid */}
-        <section className="section section--features-referrals">
+        <section className="section section--features-compliance">
           <div className="section__container">
             <div className="section__header" data-reveal>
-              <h2 className="section__title">Built for high-volume, hourly referrals</h2>
+              <h2 className="section__title">Why teams trust Aureli Compliance</h2>
             </div>
-            <div className="features-referrals-grid">
+            <div className="features-compliance-grid">
               {features.map(({ title, description }) => (
-                <article className="feature-referral-card" data-reveal key={title}>
-                  <h3 className="feature-referral-card__title">{title}</h3>
-                  <p className="feature-referral-card__description">{description}</p>
+                <article className="feature-compliance-card" data-reveal key={title}>
+                  <h3 className="feature-compliance-card__title">{title}</h3>
+                  <p className="feature-compliance-card__description">{description}</p>
                 </article>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Stats Section - Adapted for startup */}
-        <section className="section section--stats-referrals">
+        {/* Stats Section */}
+        <section className="section section--stats-compliance">
           <div className="section__container">
             <div className="section__header" data-reveal>
-              <h2 className="section__title">
-                More hires, higher retention—driven by your team
-              </h2>
+              <h2 className="section__title">Stay compliant without slowing down hiring</h2>
               <p className="section__subtitle">
-                Referral programs typically deliver better results than traditional hiring channels.
+                Automated compliance typically delivers significant improvements in efficiency and audit readiness.
               </p>
             </div>
-            <div className="stats-referrals-grid">
-              <div className="stat-referral-item" data-reveal>
-                <div className="stat-referral-item__value">25%</div>
-                <div className="stat-referral-item__label">reduction in time-to-hire</div>
+            <div className="stats-compliance-grid">
+              <div className="stat-compliance-item" data-reveal>
+                <div className="stat-compliance-item__value">100%</div>
+                <div className="stat-compliance-item__label">audit readiness across all locations</div>
               </div>
-              <div className="stat-referral-item" data-reveal>
-                <div className="stat-referral-item__value">40%</div>
-                <div className="stat-referral-item__label">increase in applicant quality</div>
+              <div className="stat-compliance-item" data-reveal>
+                <div className="stat-compliance-item__value">60%</div>
+                <div className="stat-compliance-item__label">reduction in manual compliance work</div>
               </div>
-              <div className="stat-referral-item" data-reveal>
-                <div className="stat-referral-item__value">2x</div>
-                <div className="stat-referral-item__label">improvement in retention after 90 days</div>
+              <div className="stat-compliance-item" data-reveal>
+                <div className="stat-compliance-item__value">50%</div>
+                <div className="stat-compliance-item__label">faster onboarding time</div>
               </div>
             </div>
             <div className="stats-note" data-reveal>
               <p className="stats-note__text">
-                *Industry benchmarks for referral programs. Results may vary.
+                *Industry benchmarks for automated compliance. Results may vary.
               </p>
             </div>
           </div>
@@ -316,7 +311,7 @@ export default function Referrals() {
           <div className="section__container">
             <div className="section__header" data-reveal>
               <h2 className="section__title">
-                Where Aureli Referrals drive better, faster hires
+                Where Aureli Compliance keeps hiring on track
               </h2>
             </div>
             <div className="use-cases-grid">
@@ -336,28 +331,22 @@ export default function Referrals() {
         </section>
 
         {/* How It Works */}
-        <section className="section section--how-referrals" id="how-it-works">
+        <section className="section section--how-compliance" id="how-it-works">
           <div className="section__container">
             <div className="section__header" data-reveal>
               <h2 className="section__title">How it works</h2>
-              <p className="section__subtitle">
-                With Aureli Referrals, employees can instantly share open roles with their networks via
-                text, QR code, or a mobile-friendly page. Aureli Referrals tracks every step, from
-                referral sent to hired, and keeps your team informed. No spreadsheets, no follow-ups.
-                Just results.
-              </p>
             </div>
-            <div className="how-referrals-grid">
+            <div className="how-compliance-grid">
               {howItWorks.map(({ step, title, description }) => (
-                <article className="how-referral-card" data-reveal key={step}>
-                  <div className="how-referral-card__step">{step}</div>
-                  <h3 className="how-referral-card__title">{title}</h3>
-                  <p className="how-referral-card__description">{description}</p>
+                <article className="how-compliance-card" data-reveal key={step}>
+                  <div className="how-compliance-card__step">{step}</div>
+                  <h3 className="how-compliance-card__title">{title}</h3>
+                  <p className="how-compliance-card__description">{description}</p>
                 </article>
               ))}
             </div>
-            <div className="how-referrals-cta" data-reveal>
-              <a href="#contact" className="how-referrals-link">
+            <div className="how-compliance-cta" data-reveal>
+              <a href="#contact" className="how-compliance-link">
                 Book a demo →
               </a>
             </div>
@@ -368,17 +357,18 @@ export default function Referrals() {
         <section className="section section--cta" id="contact">
           <div className="section__container">
             <div className="cta-content-wrapper" data-reveal>
-              <h2 className="cta__title">Launch your referral program today</h2>
+              <h2 className="cta__title">
+                See automated compliance in action
+              </h2>
               <p className="cta__subtitle">
-                Get early access to Aureli Referrals and start turning your employees into your best
-                recruiters.
+                Book a demo and see how Aureli Compliance helps you hire quickly without cutting compliance corners.
               </p>
             </div>
             <div className="cta-form-wrapper" data-reveal>
               <div className="scheduler-intro">
                 <h3 className="scheduler-intro__title">Schedule a Demo</h3>
                 <p className="scheduler-intro__description">
-                  Book a personalized demo with our team. We'll show you how Aureli Referrals can
+                  Book a personalized demo with our team. We'll show you how Aureli Compliance can
                   transform your hiring process.
                 </p>
               </div>

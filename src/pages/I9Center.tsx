@@ -4,121 +4,121 @@ import { useEffect, useMemo } from "react";
 import "../styles/App.css";
 import Header from "../components/Header";
 
-const whyReferrals = [
+const whyI9 = [
   {
-    title: "High-retention hires",
-    description: "from trusted sources",
+    title: "Cut manual I-9 work",
+    description: "with automated form completion",
   },
   {
-    title: "Fewer steps",
-    description: "faster conversions",
+    title: "Choose from mobile-friendly verification methods",
+    description: "that meet your workers where they are",
   },
   {
-    title: "Easy mobile experience",
-    description: "for employees and candidates",
+    title: "Stay audit-ready",
+    description: "with built-in compliance tracking and E-Verify integration",
   },
   {
-    title: "Automated from end to end",
-    description: "no manual tracking",
+    title: "Drive faster start times",
+    description: "with a smoother onboarding experience",
   },
 ];
 
 const capabilities = [
-  "Reduce no-show rates and early turnover",
-  "Cut sourcing spend without losing quality",
-  "Eliminate manual work with auto-tracking and reporting",
-  "Incentivize effectively with flexible reward settings",
-  "Reach frontline workers through SMS and mobile workflows",
-  "Measure impact with real-time data",
+  "Mobile-friendly form access and verification",
+  "Multiple verification options for different worker types",
+  "Auto-fill and prepopulation of common fields",
+  "Custom alerts and compliance dashboards",
+  "E-Verify integration with status tracking",
+  "Real-time status visibility for hiring managers",
 ];
 
 const features = [
   {
-    title: "Mobile-first",
-    description: "referral experience for on-the-go workers",
+    title: "Purpose-built",
+    description: "for high-volume and hourly onboarding",
   },
   {
-    title: "Refer via text",
-    description: "using auto-generated links and QR codes with no app required",
+    title: "All-in-one dashboard",
+    description: "for I-9 status, E-Verify, and worker actions",
   },
   {
-    title: "Real-time",
-    description: "referral tracking and engagement insights",
+    title: "Custom workflows",
+    description: "for different worker groups or regions",
   },
   {
-    title: "Configurable reward settings",
-    description: "based on hire status",
+    title: "Works seamlessly",
+    description: "with Aureli Onboard and your ATS",
   },
   {
-    title: "Easy campaign creation",
-    description: "for recruiters and managers",
+    title: "Continuous updates",
+    description: "from our I-9 compliance experts",
   },
   {
-    title: "Fully integrated",
-    description: "with your hiring workflows in Aureli",
+    title: "Agentic AI",
+    description: "automates steps and flags risk proactively",
   },
 ];
 
 const useCases = [
   {
-    title: "Launch referral campaigns",
-    description: "for peak season hiring",
+    title: "Onboarding new frontline workers",
+    description: "during seasonal surges",
   },
   {
-    title: "Target hard-to-fill roles",
-    description: "with focused incentive programs",
+    title: "Managing I-9 compliance",
+    description: "for remote or distributed teams",
   },
   {
-    title: "Engage and reward",
-    description: "your top-performing employees",
+    title: "Rehiring former employees",
+    description: "with updated verification",
   },
 ];
 
 const howItWorks = [
   {
     step: "1",
-    title: "Share open roles",
+    title: "Complete mobile-friendly forms",
     description:
-      "Employees instantly share open roles with their networks via text, QR code, or a mobile-friendly page.",
+      "Workers complete mobile-friendly I-9 forms, choose their verification method, and receive real-time guidance to reduce errors.",
   },
   {
     step: "2",
-    title: "Track every step",
+    title: "Get instant visibility",
     description:
-      "Aureli Referrals tracks every step, from referral sent to hired, and keeps your team informed.",
+      "Hiring managers get instant visibility into completion status, and your HR team stays audit-ready without chasing paperwork.",
   },
   {
     step: "3",
-    title: "Get results",
+    title: "Stay compliant",
     description:
-      "No spreadsheets, no follow-ups. Just results. Fill roles faster with people your team already trusts.",
+      "Every form is complete, accurate, and audit-ready. No delays, no manual follow-up, no audit headaches.",
   },
 ];
 
 const faqs = [
   {
-    question: "How do employees share referrals?",
+    question: "How does mobile-friendly I-9 completion work?",
     answer:
-      "Employees can share open roles instantly via text message, QR code, or a mobile-friendly referral page. No app download required—just click and share.",
+      "Workers can complete I-9 forms on any mobile device through a streamlined interface. The system guides them through each section, validates information in real-time, and supports multiple verification methods including remote options.",
   },
   {
-    question: "How are referrals tracked?",
+    question: "Does it integrate with E-Verify?",
     answer:
-      "Aureli Referrals automatically tracks every referral from the moment it's sent through to hire. You get real-time insights into referral status, engagement, and conversion rates—no manual tracking needed.",
+      "Yes, Aureli I-9 Center integrates seamlessly with E-Verify and provides real-time status tracking. You'll see E-Verify results directly in your dashboard and receive alerts for any issues that need attention.",
   },
   {
-    question: "Can I customize reward settings?",
+    question: "Can I customize workflows for different worker types?",
     answer:
-      "Yes, you can configure reward settings based on hire status, role type, or other criteria. Set different incentives for different campaigns and roles.",
+      "Absolutely. You can create custom workflows for different worker groups, locations, or regions. Set up different verification methods, approval processes, and alerts based on your specific needs.",
   },
   {
-    question: "Does it integrate with my existing hiring tools?",
+    question: "How does it help with audits?",
     answer:
-      "Aureli Referrals integrates seamlessly with your hiring workflows in Aureli and can connect with your existing HRIS and ATS systems.",
+      "Aureli I-9 Center maintains complete audit trails, tracks all form completions and modifications, and ensures every I-9 is submitted correctly and on time. Built-in compliance dashboards give you instant visibility into your I-9 status across your organization.",
   },
 ];
 
-export default function Referrals() {
+export default function I9Center() {
   const currentYear = useMemo(() => new Date().getFullYear(), []);
 
   useEffect(() => {
@@ -162,17 +162,17 @@ export default function Referrals() {
 
       <main>
         {/* Hero Section */}
-        <section className="hero hero--referrals">
+        <section className="hero hero--i9">
           <div className="hero__container">
             <div className="hero__content" data-reveal>
               <div className="hero__badge">Coming Soon</div>
               <h1 className="hero__title">
-                Fast, high-quality hires from the people who know your business best
+                Fast, compliant I-9s without the friction
               </h1>
               <p className="hero__subtitle">
-                Turn employees into your #1 source of high-quality hires. Aureli Referrals taps into
-                the power of your existing workforce by automating referral campaigns to fill open
-                roles faster with trusted candidates who stay longer.
+                Complete I-9s in minutes—not days—with audit-ready workflows. Simplify I-9 completion
+                and verification for your frontline workforce. No delays, no manual follow-up, no
+                audit headaches.
               </p>
               <div className="hero__actions">
                 <a className="hero__primary" href="#contact">
@@ -186,60 +186,55 @@ export default function Referrals() {
           </div>
         </section>
 
-        {/* Why Referrals Section */}
-        <section className="section section--why-referrals">
+        {/* Why I-9 Center Section */}
+        <section className="section section--why-i9">
           <div className="section__container">
             <div className="section__header" data-reveal>
-              <h2 className="section__title">Why Aureli Referrals?</h2>
+              <h2 className="section__title">Why Aureli I-9 Center?</h2>
               <p className="section__subtitle">
-                Aureli Referrals taps into the power of your existing workforce by automating referral
-                campaigns to fill open roles faster with trusted candidates who stay longer.
+                Simplify I-9 completion and verification for your frontline workforce. No delays, no
+                manual follow-up, no audit headaches.
               </p>
             </div>
-            <div className="why-referrals-grid">
-              {whyReferrals.map(({ title, description }) => (
-                <article className="why-referral-card" data-reveal key={title}>
-                  <h3 className="why-referral-card__title">{title}</h3>
-                  <p className="why-referral-card__description">{description}</p>
+            <div className="why-i9-grid">
+              {whyI9.map(({ title, description }) => (
+                <article className="why-i9-card" data-reveal key={title}>
+                  <h3 className="why-i9-card__title">{title}</h3>
+                  <p className="why-i9-card__description">{description}</p>
                 </article>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Built-In Referrals Section */}
-        <section className="section section--built-in">
+        {/* Frictionless Section */}
+        <section className="section section--frictionless">
           <div className="section__container">
-            <div className="built-in-content" data-reveal>
-              <h2 className="section__title">Built-In Referrals That Actually Deliver</h2>
+            <div className="frictionless-content" data-reveal>
+              <h2 className="section__title">Frictionless I-9s for Every Hire</h2>
               <p className="section__subtitle">
-                Aureli Referrals tracks every referral, targets the right roles, and keeps employees
-                engaged. Launch campaigns that scale, and fill roles faster with people your team
-                already trusts.
+                Aureli I-9 Center guides candidates through compliant form completion. It flags risks,
+                prevents errors, and ensures every I-9 is submitted correctly and on time.
               </p>
-              <a href="#features" className="built-in-link">
+              <a href="#features" className="frictionless-link">
                 Learn More →
               </a>
             </div>
           </div>
         </section>
 
-        {/* Benefits Section */}
-        <section className="section section--benefits-referrals">
+        {/* Built for Pace Section */}
+        <section className="section section--built-pace">
           <div className="section__container">
-            <div className="benefits-referrals-content" data-reveal>
-              <h2 className="section__title">
-                Referred workers stay longer, show up faster
-              </h2>
+            <div className="built-pace-content" data-reveal>
+              <h2 className="section__title">Built for the pace of frontline hiring</h2>
               <p className="section__subtitle">
-                Referrals isn't just another hiring channel. It's the one that works. Aureli Referrals
-                turns your employees into your best recruiters with fast, simple tools that make it easy
-                to send and track referrals from any device. You'll spend less on sourcing and fill
-                roles with candidates who are already a cultural fit.
+                Aureli I-9 Center was built for companies that move fast. With flexible verification
+                methods, a mobile-first interface, and real-time alerts, you can onboard workers quickly
+                and confidently without compromising on compliance. Whether you're scaling during peak
+                season or rehiring returning staff, we make sure every form is complete, accurate, and
+                audit-ready.
               </p>
-              <a href="#how-it-works" className="benefits-referrals-link">
-                See it in action →
-              </a>
             </div>
           </div>
         </section>
@@ -248,7 +243,7 @@ export default function Referrals() {
         <section className="section section--capabilities" id="features">
           <div className="section__container">
             <div className="section__header" data-reveal>
-              <h2 className="section__title">What you can do with Aureli Referrals</h2>
+              <h2 className="section__title">What you can do with Aureli I-9 Center</h2>
             </div>
             <div className="capabilities-grid">
               {capabilities.map((capability, index) => (
@@ -262,50 +257,48 @@ export default function Referrals() {
         </section>
 
         {/* Features Grid */}
-        <section className="section section--features-referrals">
+        <section className="section section--features-i9">
           <div className="section__container">
             <div className="section__header" data-reveal>
-              <h2 className="section__title">Built for high-volume, hourly referrals</h2>
+              <h2 className="section__title">Why teams choose Aureli I-9 Center</h2>
             </div>
-            <div className="features-referrals-grid">
+            <div className="features-i9-grid">
               {features.map(({ title, description }) => (
-                <article className="feature-referral-card" data-reveal key={title}>
-                  <h3 className="feature-referral-card__title">{title}</h3>
-                  <p className="feature-referral-card__description">{description}</p>
+                <article className="feature-i9-card" data-reveal key={title}>
+                  <h3 className="feature-i9-card__title">{title}</h3>
+                  <p className="feature-i9-card__description">{description}</p>
                 </article>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Stats Section - Adapted for startup */}
-        <section className="section section--stats-referrals">
+        {/* Stats Section */}
+        <section className="section section--stats-i9">
           <div className="section__container">
             <div className="section__header" data-reveal>
-              <h2 className="section__title">
-                More hires, higher retention—driven by your team
-              </h2>
+              <h2 className="section__title">Get I-9s done right—without the back and forth</h2>
               <p className="section__subtitle">
-                Referral programs typically deliver better results than traditional hiring channels.
+                I-9 automation typically delivers significant improvements in onboarding efficiency.
               </p>
             </div>
-            <div className="stats-referrals-grid">
-              <div className="stat-referral-item" data-reveal>
-                <div className="stat-referral-item__value">25%</div>
-                <div className="stat-referral-item__label">reduction in time-to-hire</div>
+            <div className="stats-i9-grid">
+              <div className="stat-i9-item" data-reveal>
+                <div className="stat-i9-item__value">30%</div>
+                <div className="stat-i9-item__label">reduction in onboarding time</div>
               </div>
-              <div className="stat-referral-item" data-reveal>
-                <div className="stat-referral-item__value">40%</div>
-                <div className="stat-referral-item__label">increase in applicant quality</div>
+              <div className="stat-i9-item" data-reveal>
+                <div className="stat-i9-item__value">40%</div>
+                <div className="stat-i9-item__label">fewer incomplete I-9s</div>
               </div>
-              <div className="stat-referral-item" data-reveal>
-                <div className="stat-referral-item__value">2x</div>
-                <div className="stat-referral-item__label">improvement in retention after 90 days</div>
+              <div className="stat-i9-item" data-reveal>
+                <div className="stat-i9-item__value">99%</div>
+                <div className="stat-i9-item__label">E-Verify compliance rate</div>
               </div>
             </div>
             <div className="stats-note" data-reveal>
               <p className="stats-note__text">
-                *Industry benchmarks for referral programs. Results may vary.
+                *Industry benchmarks for I-9 automation. Results may vary.
               </p>
             </div>
           </div>
@@ -316,7 +309,7 @@ export default function Referrals() {
           <div className="section__container">
             <div className="section__header" data-reveal>
               <h2 className="section__title">
-                Where Aureli Referrals drive better, faster hires
+                Where Aureli I-9 Center streamlines verification
               </h2>
             </div>
             <div className="use-cases-grid">
@@ -336,28 +329,27 @@ export default function Referrals() {
         </section>
 
         {/* How It Works */}
-        <section className="section section--how-referrals" id="how-it-works">
+        <section className="section section--how-i9" id="how-it-works">
           <div className="section__container">
             <div className="section__header" data-reveal>
               <h2 className="section__title">How it works</h2>
               <p className="section__subtitle">
-                With Aureli Referrals, employees can instantly share open roles with their networks via
-                text, QR code, or a mobile-friendly page. Aureli Referrals tracks every step, from
-                referral sent to hired, and keeps your team informed. No spreadsheets, no follow-ups.
-                Just results.
+                Workers complete mobile-friendly I-9 forms, choose their verification method, and
+                receive real-time guidance to reduce errors. Hiring managers get instant visibility into
+                completion status, and your HR team stays audit-ready without chasing paperwork.
               </p>
             </div>
-            <div className="how-referrals-grid">
+            <div className="how-i9-grid">
               {howItWorks.map(({ step, title, description }) => (
-                <article className="how-referral-card" data-reveal key={step}>
-                  <div className="how-referral-card__step">{step}</div>
-                  <h3 className="how-referral-card__title">{title}</h3>
-                  <p className="how-referral-card__description">{description}</p>
+                <article className="how-i9-card" data-reveal key={step}>
+                  <div className="how-i9-card__step">{step}</div>
+                  <h3 className="how-i9-card__title">{title}</h3>
+                  <p className="how-i9-card__description">{description}</p>
                 </article>
               ))}
             </div>
-            <div className="how-referrals-cta" data-reveal>
-              <a href="#contact" className="how-referrals-link">
+            <div className="how-i9-cta" data-reveal>
+              <a href="#contact" className="how-i9-link">
                 Book a demo →
               </a>
             </div>
@@ -368,18 +360,17 @@ export default function Referrals() {
         <section className="section section--cta" id="contact">
           <div className="section__container">
             <div className="cta-content-wrapper" data-reveal>
-              <h2 className="cta__title">Launch your referral program today</h2>
+              <h2 className="cta__title">Speed up I-9s without risking compliance. Book a demo today.</h2>
               <p className="cta__subtitle">
-                Get early access to Aureli Referrals and start turning your employees into your best
-                recruiters.
+                Get early access to Aureli I-9 Center and streamline your onboarding process.
               </p>
             </div>
             <div className="cta-form-wrapper" data-reveal>
               <div className="scheduler-intro">
                 <h3 className="scheduler-intro__title">Schedule a Demo</h3>
                 <p className="scheduler-intro__description">
-                  Book a personalized demo with our team. We'll show you how Aureli Referrals can
-                  transform your hiring process.
+                  Book a personalized demo with our team. We'll show you how Aureli I-9 Center can
+                  transform your onboarding process.
                 </p>
               </div>
               <div className="scheduler-embed" aria-live="polite" style={{ minHeight: "520px" }}>
