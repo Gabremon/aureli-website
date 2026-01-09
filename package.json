@@ -6,19 +6,24 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "migrate": "node scripts/run-migrations.js",
+    "migrate:up": "node scripts/run-migrations.js"
   },
   "devDependencies": {
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@vitejs/plugin-react": "^5.0.4",
     "typescript": "~5.9.3",
-    "vite": "^7.1.7"
+    "vite": "^7.1.7",
+    "@types/pg": "^8.10.9"
   },
   "dependencies": {
     "@calcom/embed-react": "^1.5.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-router-dom": "^6.26.0"
-  }
+    "react-router-dom": "^6.26.0",
+    "pg": "^8.11.3",
+    "dotenv": "^16.3.1"
+  },
 }
