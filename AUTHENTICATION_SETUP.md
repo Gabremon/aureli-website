@@ -19,7 +19,17 @@ This guide explains how to set up and use the authentication system with role-ba
    npm run migrate
    ```
 
-4. **Create a test user:**
+4. **Create test users (quick setup):**
+   ```bash
+   npm run seed:test
+   ```
+   
+   This creates three test users:
+   - Admin: `test@admin.com` / `test`
+   - Business Owner: `test@business.com` / `test`
+   - Employee: `test@employee.com` / `test`
+   
+   **Or create individual users:**
    ```bash
    npm run seed:user <email> <password> <name> <role>
    ```

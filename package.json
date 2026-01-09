@@ -12,6 +12,8 @@
     "server": "node server/index.js",
     "dev:server": "node --watch server/index.js",
     "seed:user": "node scripts/seed-user.js",
+    "seed:test": "node scripts/seed-test-users.js",
+    "hash:password": "node scripts/generate-bcrypt-hash.js",
     "test:db": "node scripts/test-connection.js",
     "fix:username": "node scripts/fix-username.js",
     "diagnose:db": "bash scripts/diagnose-db.sh",

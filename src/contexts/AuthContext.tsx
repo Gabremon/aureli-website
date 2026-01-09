@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 
 export type UserRole = 'business_owner' | 'employee' | 'admin';
 
@@ -8,6 +9,8 @@ export interface User {
   name: string;
   role: UserRole;
 }
+
+export type { UserRole as AuthUserRole };
 
 interface AuthContextType {
   user: User | null;
@@ -55,7 +58,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setToken(null);
         }
       } catch (error) {
-        console.error('Token verification failed:', error);
+        // Backend server might not be running - that's okay, just clear token
+        console.warn('Backend server not available or token verification failed:', error);
         localStorage.removeItem('auth_token');
         setToken(null);
       } finally {

@@ -30,23 +30,6 @@ This guide will help you set up PostgreSQL locally so everyone on the team can w
    ```bash
    docker-compose logs postgres
    ```
-
-## Environment Variables
-
-Create a `.env` file in the root directory with the following variables:
-
-```env
-# Database Configuration
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=aureli_db
-DB_USER=aureli_user
-DB_PASSWORD=aureli_password
-
-# Optional: Full connection string
-# DATABASE_URL=postgresql://aureli_user:aureli_password@localhost:5432/aureli_db
-```
-
 ## Common Commands
 
 ### Start the database
@@ -83,65 +66,8 @@ npm install  # Install dependencies if not done yet
 npm run migrate
 ```
 
-This will run all migration files in the `migrations/` directory. See [MIGRATIONS.md](./MIGRATIONS.md) for detailed migration instructions.
+## Seeding Users
 
-## Connecting from Your Application
+After starting the database and running all the migrations test users are there and can be implemented
 
-Use these connection details in your backend/API:
-
-- **Host:** `localhost`
-- **Port:** `5432`
-- **Database:** `aureli_db`
-- **Username:** `aureli_user`
-- **Password:** `aureli_password`
-
-Connection string format:
-```
-postgresql://aureli_user:aureli_password@localhost:5432/aureli_db
-```
-
-## Troubleshooting
-
-### Port 5432 is already in use
-If you already have PostgreSQL running locally, change the `DB_PORT` in your `.env` file and update the `docker-compose.yml` ports mapping.
-
-### Database not connecting
-1. Make sure Docker is running
-2. Check if the container is up: `docker-compose ps`
-3. Check the logs: `docker-compose logs postgres`
-4. Verify your `.env` file matches the docker-compose configuration
-
-### Migration failed: "user does not exist" or "password authentication failed"
-This usually happens when the database was created with different credentials than what's in your `.env` file.
-
-**Solution:**
-1. Make sure your `.env` file exists and has correct values (copy from `env.template` if needed)
-2. Recreate the database with correct credentials:
-   ```bash
-   docker-compose down -v
-   docker-compose up -d
-   ```
-3. Then run migrations again: `npm run migrate`
-
-For detailed troubleshooting, see [TROUBLESHOOTING.md](./TROUBLESHOOTING.md)
-
-### Reset the database
-```bash
-docker-compose down -v
-docker-compose up -d
-```
-
-## Data Persistence
-
-Database data is stored in a Docker volume (`postgres_data`). This means:
-- Data persists even if you stop the container
-- Data is shared across all team members who use this setup
-- To completely reset, use `docker-compose down -v`
-
-## Notes
-
-- The `.env` file is gitignored - each developer maintains their own local copy
-- The `env.template` file is committed to the repo as a template for everyone
-- Everyone uses the same database schema, but can customize connection details if needed
-- If you need to change the password or database name, update both your `.env` file and the docker-compose.yml defaults (or make sure your `.env` values match)
-
+npm run seed:test
