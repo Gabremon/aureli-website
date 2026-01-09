@@ -22,12 +22,15 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 // Database connection configuration
+// Note: PostgreSQL usernames with hyphens are case-sensitive and stored exactly as created
 const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT || '5432', 10),
   database: process.env.DB_NAME || 'aureli_db',
   user: process.env.DB_USER || 'aureli_user',
   password: process.env.DB_PASSWORD || 'aureli_password',
+  // Ensure proper connection handling for usernames with special characters
+  connectionString: process.env.DATABASE_URL || undefined,
 };
 
 const migrationsDir = path.join(__dirname, '..', 'migrations');
@@ -119,12 +122,42 @@ async function runMigration(client, migrationFile) {
  * Main function to run all migrations
  */
 async function runMigrations() {
-  const client = new Client(dbConfig);
+  // Always use connection string format to properly handle usernames with special characters
+  // PostgreSQL usernames with hyphens are case-sensitive and must be properly encoded
+  const escapedUser = encodeURIComponent(dbConfig.user);
+  const escapedPassword = encodeURIComponent(dbConfig.password);
+  const escapedDatabase = encodeURIComponent(dbConfig.database);
+  
+  const connectionString = `postgresql://${escapedUser}:${escapedPassword}@${dbConfig.host}:${dbConfig.port}/${escapedDatabase}`;
+  
+  const client = new Client({
+    connectionString: connectionString,
+  });
 
   try {
     console.log('🚀 Connecting to database...');
+    console.log(`   Host: ${dbConfig.host}:${dbConfig.port}`);
+    console.log(`   Database: ${dbConfig.database}`);
+    console.log(`   User: ${dbConfig.user}`);
+    console.log(`   Password: ${dbConfig.password ? '***' : '(not set)'}`);
+    console.log(`   Connection string: postgresql://${escapedUser}:***@${dbConfig.host}:${dbConfig.port}/${escapedDatabase}`);
+    
+    // Debug: Show what .env file was found
+    const envPath = path.join(__dirname, '..', '.env');
+    const envExists = fs.existsSync(envPath);
+    console.log(`   .env file exists: ${envExists ? 'yes' : 'NO'}`);
+    if (envExists) {
+      console.log(`   .env file path: ${envPath}`);
+    }
+    
+    // Try connecting
     await client.connect();
     console.log('✅ Connected to database');
+    
+    // Verify we can query (this tests the connection)
+    const testResult = await client.query('SELECT current_user, current_database()');
+    console.log(`   Current user: ${testResult.rows[0].current_user}`);
+    console.log(`   Current database: ${testResult.rows[0].current_database}`);
 
     // First, ensure the migrations table exists
     const migrationsTableSql = fs.readFileSync(
@@ -161,6 +194,46 @@ async function runMigrations() {
     console.log('\n✨ All migrations completed successfully!');
   } catch (error) {
     console.error('\n❌ Migration failed:', error.message);
+    if (error.code) {
+      console.error(`   Error code: ${error.code}`);
+    }
+    
+    // Provide helpful error messages for common issues
+    if (error.message.includes('does not exist') || error.code === '28P01' || error.code === '28000') {
+      console.error('\n💡 Authentication/Role Error:');
+      console.error('   The user exists in the database, but connection is failing.');
+      console.error(`   Attempting to connect as: "${dbConfig.user}"`);
+      console.error(`   Database: ${dbConfig.database}`);
+      console.error('\n   Possible causes:');
+      console.error('   1. Username case mismatch (PostgreSQL is case-sensitive for special chars)');
+      console.error('   2. Password mismatch in .env file');
+      console.error('   3. Database name mismatch (check DB_NAME in .env)');
+      console.error('   4. Connection authentication method issue');
+      console.error('\n   Solutions:');
+      console.error('   1. Verify user exists: docker-compose exec postgres psql -U "Aureli-Gabe-User" -d postgres -c "\\du"');
+      console.error('   2. Test connection: docker-compose exec postgres psql -U "Aureli-Gabe-User" -d aureli_db');
+      console.error('   3. Check .env file has exact username (case-sensitive): DB_USER=Aureli-Gabe-User');
+      console.error('   4. Verify password matches: DB_PASSWORD=your_password');
+      console.error('   5. Check database name: DB_NAME=aureli_db (with underscore, not hyphen)');
+      console.error('\n   If issues persist, try recreating: docker-compose down -v && docker-compose up -d');
+    } else if (error.code === 'ENOTFOUND' || error.message.includes('connect')) {
+      console.error('\n💡 This error usually means:');
+      console.error('   1. The database is not running');
+      console.error('   2. Docker is not running');
+      console.error('   3. The connection settings are incorrect');
+      console.error('\n   Solutions:');
+      console.error('   • Check: docker-compose ps');
+      console.error('   • Start database: docker-compose up -d');
+      console.error('   • Verify .env file has correct DB_HOST and DB_PORT');
+    } else if (error.code === '3D000' || error.message.includes('database') && error.message.includes('does not exist')) {
+      console.error('\n💡 This error usually means:');
+      console.error('   The database does not exist');
+      console.error('\n   Solutions:');
+      console.error('   • Try: docker-compose down -v && docker-compose up -d');
+      console.error('   • Or manually create the database (see TROUBLESHOOTING.md)');
+    }
+    
+    console.error('\n📖 For more help, see TROUBLESHOOTING.md');
     process.exit(1);
   } finally {
     await client.end();

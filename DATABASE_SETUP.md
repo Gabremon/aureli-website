@@ -111,6 +111,20 @@ If you already have PostgreSQL running locally, change the `DB_PORT` in your `.e
 3. Check the logs: `docker-compose logs postgres`
 4. Verify your `.env` file matches the docker-compose configuration
 
+### Migration failed: "user does not exist" or "password authentication failed"
+This usually happens when the database was created with different credentials than what's in your `.env` file.
+
+**Solution:**
+1. Make sure your `.env` file exists and has correct values (copy from `env.template` if needed)
+2. Recreate the database with correct credentials:
+   ```bash
+   docker-compose down -v
+   docker-compose up -d
+   ```
+3. Then run migrations again: `npm run migrate`
+
+For detailed troubleshooting, see [TROUBLESHOOTING.md](./TROUBLESHOOTING.md)
+
 ### Reset the database
 ```bash
 docker-compose down -v

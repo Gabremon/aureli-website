@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo } from "react";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
 import Cal, { getCalApi } from "@calcom/embed-react";
 import "./styles/App.css";
 import Header from "./components/Header";
@@ -8,6 +8,12 @@ import Referrals from "./pages/Referrals";
 import I9Center from "./pages/I9Center";
 import Onboard from "./pages/Onboard";
 import Compliance from "./pages/Compliance";
+import Login from "./pages/Login";
+import AdminDashboard from "./pages/AdminDashboard";
+import BusinessOwnerDashboard from "./pages/BusinessOwnerDashboard";
+import EmployeeDashboard from "./pages/EmployeeDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 
 const products = [
   {
@@ -576,18 +582,70 @@ function HomePage() {
   );
 }
 
+function AppRoutes() {
+  const { isAuthenticated, user } = useAuth();
+
+  return (
+    <Routes>
+      {/* Public routes */}
+      <Route path="/" element={<HomePage />} />
+      <Route path="/hire" element={<Hire />} />
+      <Route path="/referrals" element={<Referrals />} />
+      <Route path="/i9-center" element={<I9Center />} />
+      <Route path="/onboard" element={<Onboard />} />
+      <Route path="/compliance" element={<Compliance />} />
+      
+      {/* Authentication routes */}
+      <Route 
+        path="/login" 
+        element={
+          isAuthenticated && user ? (
+            <Navigate to={`/${user.role === 'admin' ? 'admin' : user.role === 'business_owner' ? 'business-owner' : 'employee'}`} replace />
+          ) : (
+            <Login />
+          )
+        } 
+      />
+      
+      {/* Protected role-based routes */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/business-owner"
+        element={
+          <ProtectedRoute allowedRoles={['business_owner']}>
+            <BusinessOwnerDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employee"
+        element={
+          <ProtectedRoute allowedRoles={['employee']}>
+            <EmployeeDashboard />
+          </ProtectedRoute>
+        }
+      />
+      
+      {/* Catch all - redirect to home */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
+
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/hire" element={<Hire />} />
-        <Route path="/referrals" element={<Referrals />} />
-        <Route path="/i9-center" element={<I9Center />} />
-        <Route path="/onboard" element={<Onboard />} />
-        <Route path="/compliance" element={<Compliance />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
