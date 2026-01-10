@@ -566,24 +566,24 @@ export default function DatabaseManagement() {
                     ))}
                   </div>
                 </div>
-                {applicantStats.byBusinessOwner && applicantStats.byBusinessOwner.length > 0 && (
+                {applicantStats.byBusiness && applicantStats.byBusiness.length > 0 && (
                   <div className="stats-section">
-                    <h4>Applicants by Business Owner</h4>
+                    <h4>Applicants by Business</h4>
                     <div className="activity-table">
                       <table className="data-table">
                         <thead>
                           <tr>
                             <th>Business Name</th>
-                            <th>Email</th>
+                            <th>Business ID</th>
                             <th>Applicant Count</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {applicantStats.byBusinessOwner.map((owner: any, index: number) => (
+                          {applicantStats.byBusiness.map((business: any, index: number) => (
                             <tr key={index}>
-                              <td>{owner.business_name || 'N/A'}</td>
-                              <td>{owner.email}</td>
-                              <td>{owner.employee_count}</td>
+                              <td>{business.business_name || 'N/A'}</td>
+                              <td>{business.business_id || 'N/A'}</td>
+                              <td>{business.applicant_count || 0}</td>
                             </tr>
                           ))}
                         </tbody>

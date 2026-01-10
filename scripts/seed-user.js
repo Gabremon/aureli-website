@@ -3,7 +3,7 @@
 /**
  * Seed Script: Create a test user
  * Usage: node scripts/seed-user.js <email> <password> <name> <role>
- * Roles: admin, business_owner, employee
+ * Roles: admin, business, applicant
  */
 
 import pg from 'pg';
@@ -26,12 +26,12 @@ const pool = new Pool({
 async function seedUser(email, password, name, role) {
   if (!email || !password || !name || !role) {
     console.error('❌ Usage: node scripts/seed-user.js <email> <password> <name> <role>');
-    console.error('   Roles: admin, business_owner, employee');
+    console.error('   Roles: admin, business, applicant');
     process.exit(1);
   }
 
-  if (!['admin', 'business_owner', 'employee'].includes(role)) {
-    console.error('❌ Invalid role. Must be: admin, business_owner, or employee');
+  if (!['admin', 'business', 'applicant'].includes(role)) {
+    console.error('❌ Invalid role. Must be: admin, business, or applicant');
     process.exit(1);
   }
 

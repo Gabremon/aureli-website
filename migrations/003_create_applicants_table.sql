@@ -1,9 +1,11 @@
 -- Migration: Create applicants table with pipeline stages
 -- This table tracks applicants and candidates through the hiring pipeline
+-- Note: business_id foreign key will be added after businesses table is created and data is migrated
 
 CREATE TABLE IF NOT EXISTS applicants (
     id SERIAL PRIMARY KEY,
-    business_owner_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    business_id INTEGER,
+    business_owner_id INTEGER, -- Support old schema during migration
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     email VARCHAR(255),
@@ -29,6 +31,7 @@ CREATE TABLE IF NOT EXISTS applicants (
 );
 
 -- Create indexes for faster lookups
+CREATE INDEX IF NOT EXISTS idx_applicants_business_id ON applicants(business_id);
 CREATE INDEX IF NOT EXISTS idx_applicants_business_owner_id ON applicants(business_owner_id);
 CREATE INDEX IF NOT EXISTS idx_applicants_status ON applicants(status);
 CREATE INDEX IF NOT EXISTS idx_applicants_email ON applicants(email);

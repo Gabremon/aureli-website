@@ -2,7 +2,7 @@
 
 /**
  * Seed Test Users Migration Script
- * Creates test users for development: admin, business_owner, and employee
+ * Creates test users for development: admin, business, and applicant
  * Password for all users: "test" (hashed with bcrypt)
  */
 
@@ -33,14 +33,14 @@ const testUsers = [
   {
     email: 'test@business.com',
     password: 'test',
-    name: 'Test Business Owner',
-    role: 'business_owner',
+    name: 'Test Business',
+    role: 'business',
   },
   {
-    email: 'test@employee.com',
+    email: 'test@applicant.com',
     password: 'test',
-    name: 'Test Employee',
-    role: 'employee',
+    name: 'Test Applicant',
+    role: 'applicant',
   },
 ];
 
@@ -88,8 +88,8 @@ async function seedTestUsers() {
     console.log('✨ Test users seeding completed!');
     console.log('\n📝 You can now login with:');
     console.log('   Admin: test@admin.com / test');
-    console.log('   Business Owner: test@business.com / test');
-    console.log('   Employee: test@employee.com / test');
+    console.log('   Business: test@business.com / test');
+    console.log('   Applicant: test@applicant.com / test');
   } catch (error) {
     console.error('❌ Error seeding test users:', error.message);
     process.exit(1);

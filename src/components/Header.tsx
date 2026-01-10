@@ -25,10 +25,12 @@ export default function Header() {
     switch (user.role) {
       case 'admin':
         return '/admin';
-      case 'business_owner':
-        return '/business-owner';
-      case 'employee':
-        return '/employee';
+      case 'business':
+        // Check if location is selected, if not go to location selection
+        const selectedLocationId = localStorage.getItem('selectedLocationId') || sessionStorage.getItem('selectedLocationId');
+        return selectedLocationId ? '/business-owner' : '/business-owner/location-selection';
+      case 'applicant':
+        return '/applicant';
       default:
         return '/';
     }
@@ -58,7 +60,7 @@ export default function Header() {
           {isAuthenticated && user ? (
             <>
               <Link to={getDashboardPath()} className="nav__link">
-                {user.name} ({user.role === 'admin' ? 'Admin' : user.role === 'business_owner' ? 'Owner' : 'Employee'})
+                {user.name} ({user.role === 'admin' ? 'Admin' : user.role === 'business' ? 'Business' : 'Applicant'})
               </Link>
               <button onClick={handleLogout} className="nav__cta" style={{ cursor: 'pointer' }}>
                 Logout

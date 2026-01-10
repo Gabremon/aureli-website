@@ -1,0 +1,241 @@
+/* Location Selection Styles */
+
+.location-selection-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.location-selection-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.location-selection-header h1 {
+  margin-bottom: 0.5rem;
+}
+
+.location-selection-header p {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.loading-container,
+.error-container,
+.no-locations-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-container h2 {
+  color: #dc2626;
+  margin-bottom: 0.5rem;
+}
+
+.no-locations-container p {
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.locations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.location-card {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.location-card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+}
+
+.location-card.selected {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2), 0 2px 4px -1px rgba(59, 130, 246, 0.1);
+}
+
+.location-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.location-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  flex: 1;
+}
+
+.location-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.location-badge.active {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.location-badge.inactive {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.location-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.location-card-body p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.location-card-body strong {
+  color: #111827;
+  font-weight: 600;
+}
+
+.location-address {
+  font-size: 0.9375rem;
+}
+
+.location-city-state {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.location-phone,
+.location-email {
+  font-size: 0.875rem;
+}
+
+.location-card-selected {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #3b82f6;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.2s ease;
+}
+
+.location-card.selected .location-card-selected {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.location-card-selected .checkmark {
+  font-size: 1rem;
+}
+
+.location-selection-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.button-primary {
+  padding: 0.75rem 2rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.button-primary:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.button-primary:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.error-message {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #fca5a5;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .location-selection-container {
+    padding: 1rem;
+  }
+
+  .locations-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .location-card {
+    padding: 1rem;
+  }
+
+  .location-selection-header {
+    text-align: left;
+  }
+}
+

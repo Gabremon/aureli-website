@@ -10,7 +10,7 @@ import Onboard from "./pages/Onboard";
 import Compliance from "./pages/Compliance";
 import Login from "./pages/Login";
 import { AdminDashboard } from "./pages/admin";
-import { BusinessOwnerDashboard } from "./pages/business";
+import { BusinessOwnerDashboard, LocationSelection, Locations } from "./pages/business";
 import { EmployeeDashboard } from "./pages/employee";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
@@ -600,7 +600,7 @@ function AppRoutes() {
         path="/login" 
         element={
           isAuthenticated && user ? (
-            <Navigate to={`/${user.role === 'admin' ? 'admin' : user.role === 'business_owner' ? 'business-owner' : 'employee'}`} replace />
+            <Navigate to={`/${user.role === 'admin' ? 'admin' : user.role === 'business' ? 'business-owner' : 'applicant'}`} replace />
           ) : (
             <Login />
           )
@@ -617,17 +617,42 @@ function AppRoutes() {
         }
       />
       <Route
+        path="/business-owner/location-selection"
+        element={
+          <ProtectedRoute allowedRoles={['business']}>
+            <LocationSelection />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/business-owner/locations"
+        element={
+          <ProtectedRoute allowedRoles={['business']}>
+            <Locations />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/business-owner"
         element={
-          <ProtectedRoute allowedRoles={['business_owner']}>
+          <ProtectedRoute allowedRoles={['business']}>
             <BusinessOwnerDashboard />
           </ProtectedRoute>
         }
       />
       <Route
+        path="/applicant"
+        element={
+          <ProtectedRoute allowedRoles={['applicant']}>
+            <EmployeeDashboard />
+          </ProtectedRoute>
+        }
+      />
+      {/* Keep /employee route for backward compatibility */}
+      <Route
         path="/employee"
         element={
-          <ProtectedRoute allowedRoles={['employee']}>
+          <ProtectedRoute allowedRoles={['applicant']}>
             <EmployeeDashboard />
           </ProtectedRoute>
         }

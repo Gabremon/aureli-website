@@ -1,15 +1,34 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import Header from '../../components/Header';
+import BusinessHeader from '../../components/BusinessHeader';
 import EmployeePipeline from '../../components/business/EmployeePipeline';
 import '../../styles/Dashboard.css';
 import '../../styles/business/business.css';
 
 export default function BusinessOwnerDashboard() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if a location has been selected
+    const selectedLocationId = localStorage.getItem('selectedLocationId') || sessionStorage.getItem('selectedLocationId');
+    
+    if (!selectedLocationId) {
+      // Redirect to location selection if no location is selected
+      navigate('/business-owner/location-selection');
+    }
+  }, [navigate]);
+
+  // Don't render dashboard content until location is selected
+  const selectedLocationId = localStorage.getItem('selectedLocationId') || sessionStorage.getItem('selectedLocationId');
+  if (!selectedLocationId) {
+    return null; // Will redirect in useEffect
+  }
 
   return (
     <div className="dashboard-page business-dashboard">
-      <Header />
+      <BusinessHeader />
       <main className="dashboard-main">
         <div className="dashboard-container has-pipeline">
           <div className="dashboard-header" style={{ padding: '2rem 2rem 1rem 2rem', maxWidth: '100%' }}>
@@ -19,9 +38,6 @@ export default function BusinessOwnerDashboard() {
                 Welcome back, {user?.name} ({user?.email})
               </p>
             </div>
-            <button onClick={logout} className="dashboard-logout">
-              Logout
-            </button>
           </div>
 
           <div className="dashboard-content">

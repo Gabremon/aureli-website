@@ -175,21 +175,34 @@ function verifyAuth(req, res, next) {
 
 // Employee management endpoints
 
-// Get all applicants for a business owner
+// Get all applicants for a business
 app.get('/api/employees', verifyAuth, async (req, res) => {
   try {
-    // Only business owners can access their applicants
-    if (req.user.role !== 'business_owner') {
-      return res.status(403).json({ error: 'Only business owners can access applicants' });
+    // Only business users can access their applicants
+    if (req.user.role !== 'business') {
+      return res.status(403).json({ error: 'Only business users can access applicants' });
     }
 
+    // Get business_id from user
+    const userResult = await pool.query(
+      'SELECT business_id FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+
+    if (userResult.rows.length === 0 || !userResult.rows[0].business_id) {
+      return res.status(403).json({ error: 'User is not associated with a business' });
+    }
+
+    const businessId = userResult.rows[0].business_id;
+
+    // Query applicants using business_id (with fallback to business_owner_id for migration period)
     const result = await pool.query(
       `SELECT id, first_name, last_name, email, phone, position, status, 
               stage_order, notes, applied_date, created_at, updated_at
        FROM applicants 
-       WHERE business_owner_id = $1 
+       WHERE (business_id = $1 OR business_owner_id = $2)
        ORDER BY status, stage_order ASC, created_at DESC`,
-      [req.user.userId]
+      [businessId, req.user.userId]
     );
 
     res.json({ employees: result.rows });
@@ -202,8 +215,8 @@ app.get('/api/employees', verifyAuth, async (req, res) => {
 // Create a new applicant/candidate
 app.post('/api/employees', verifyAuth, async (req, res) => {
   try {
-    if (req.user.role !== 'business_owner') {
-      return res.status(403).json({ error: 'Only business owners can create applicants' });
+    if (req.user.role !== 'business') {
+      return res.status(403).json({ error: 'Only business users can create applicants' });
     }
 
     const { first_name, last_name, email, phone, position, notes } = req.body;
@@ -212,18 +225,30 @@ app.post('/api/employees', verifyAuth, async (req, res) => {
       return res.status(400).json({ error: 'First name and last name are required' });
     }
 
-    // Get the max stage_order for the default status
+    // Get business_id from user
+    const userResult = await pool.query(
+      'SELECT business_id FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+
+    if (userResult.rows.length === 0 || !userResult.rows[0].business_id) {
+      return res.status(403).json({ error: 'User is not associated with a business' });
+    }
+
+    const businessId = userResult.rows[0].business_id;
+
+    // Get the max stage_order for the default status (using business_id)
     const maxOrderResult = await pool.query(
-      'SELECT COALESCE(MAX(stage_order), 0) as max_order FROM applicants WHERE business_owner_id = $1 AND status = $2',
-      [req.user.userId, 'new_applicant']
+      'SELECT COALESCE(MAX(stage_order), 0) as max_order FROM applicants WHERE business_id = $1 AND status = $2',
+      [businessId, 'new_applicant']
     );
     const nextOrder = (maxOrderResult.rows[0].max_order || 0) + 1;
 
     const result = await pool.query(
-      `INSERT INTO applicants (business_owner_id, first_name, last_name, email, phone, position, status, stage_order, notes)
+      `INSERT INTO applicants (business_id, first_name, last_name, email, phone, position, status, stage_order, notes)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        RETURNING id, first_name, last_name, email, phone, position, status, stage_order, notes, applied_date, created_at, updated_at`,
-      [req.user.userId, first_name, last_name, email || null, phone || null, position || null, 'new_applicant', nextOrder, notes || null]
+      [businessId, first_name, last_name, email || null, phone || null, position || null, 'new_applicant', nextOrder, notes || null]
     );
 
     res.status(201).json({ employee: result.rows[0] });
@@ -236,8 +261,8 @@ app.post('/api/employees', verifyAuth, async (req, res) => {
 // Update applicant status (move between stages)
 app.patch('/api/employees/:id/status', verifyAuth, async (req, res) => {
   try {
-    if (req.user.role !== 'business_owner') {
-      return res.status(403).json({ error: 'Only business owners can update applicants' });
+    if (req.user.role !== 'business') {
+      return res.status(403).json({ error: 'Only business users can update applicants' });
     }
 
     const { id } = req.params;
@@ -255,10 +280,22 @@ app.patch('/api/employees/:id/status', verifyAuth, async (req, res) => {
       return res.status(400).json({ error: 'Invalid status' });
     }
 
-    // Verify applicant belongs to this business owner
+    // Get business_id from user
+    const userResult = await pool.query(
+      'SELECT business_id FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+
+    if (userResult.rows.length === 0 || !userResult.rows[0].business_id) {
+      return res.status(403).json({ error: 'User is not associated with a business' });
+    }
+
+    const businessId = userResult.rows[0].business_id;
+
+    // Verify applicant belongs to this business (support both business_id and business_owner_id during migration)
     const applicantCheck = await pool.query(
-      'SELECT id FROM applicants WHERE id = $1 AND business_owner_id = $2',
-      [id, req.user.userId]
+      'SELECT id FROM applicants WHERE id = $1 AND (business_id = $2 OR business_owner_id = $3)',
+      [id, businessId, req.user.userId]
     );
 
     if (applicantCheck.rows.length === 0) {
@@ -269,18 +306,19 @@ app.patch('/api/employees/:id/status', verifyAuth, async (req, res) => {
     let finalStageOrder = stage_order;
     if (finalStageOrder === undefined || finalStageOrder === null) {
       const maxOrderResult = await pool.query(
-        'SELECT COALESCE(MAX(stage_order), 0) as max_order FROM applicants WHERE business_owner_id = $1 AND status = $2',
-        [req.user.userId, status]
+        'SELECT COALESCE(MAX(stage_order), 0) as max_order FROM applicants WHERE business_id = $1 AND status = $2',
+        [businessId, status]
       );
       finalStageOrder = (maxOrderResult.rows[0].max_order || 0) + 1;
     }
 
     const result = await pool.query(
       `UPDATE applicants 
-       SET status = $1, stage_order = $2, updated_at = CURRENT_TIMESTAMP
-       WHERE id = $3 AND business_owner_id = $4
+       SET status = $1, stage_order = $2, updated_at = CURRENT_TIMESTAMP,
+           business_id = COALESCE(business_id, $3)
+       WHERE id = $4 AND (business_id = $3 OR business_owner_id = $5)
        RETURNING id, first_name, last_name, email, phone, position, status, stage_order, notes, applied_date, created_at, updated_at`,
-      [status, finalStageOrder, id, req.user.userId]
+      [status, finalStageOrder, businessId, id, req.user.userId]
     );
 
     res.json({ employee: result.rows[0] });
@@ -293,17 +331,29 @@ app.patch('/api/employees/:id/status', verifyAuth, async (req, res) => {
 // Update applicant details
 app.patch('/api/employees/:id', verifyAuth, async (req, res) => {
   try {
-    if (req.user.role !== 'business_owner') {
-      return res.status(403).json({ error: 'Only business owners can update applicants' });
+    if (req.user.role !== 'business') {
+      return res.status(403).json({ error: 'Only business users can update applicants' });
     }
 
     const { id } = req.params;
     const { first_name, last_name, email, phone, position, notes } = req.body;
 
-    // Verify applicant belongs to this business owner
+    // Get business_id from user
+    const userResult = await pool.query(
+      'SELECT business_id FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+
+    if (userResult.rows.length === 0 || !userResult.rows[0].business_id) {
+      return res.status(403).json({ error: 'User is not associated with a business' });
+    }
+
+    const businessId = userResult.rows[0].business_id;
+
+    // Verify applicant belongs to this business (support both business_id and business_owner_id during migration)
     const applicantCheck = await pool.query(
-      'SELECT id FROM applicants WHERE id = $1 AND business_owner_id = $2',
-      [id, req.user.userId]
+      'SELECT id FROM applicants WHERE id = $1 AND (business_id = $2 OR business_owner_id = $3)',
+      [id, businessId, req.user.userId]
     );
 
     if (applicantCheck.rows.length === 0) {
@@ -345,12 +395,21 @@ app.patch('/api/employees/:id', verifyAuth, async (req, res) => {
     }
 
     updates.push(`updated_at = CURRENT_TIMESTAMP`);
-    values.push(id, req.user.userId);
+    updates.push(`business_id = COALESCE(business_id, $${paramCount})`);
+    const businessIdSetParam = paramCount++;
+    values.push(businessId);
+    
+    values.push(id);
+    const idParam = paramCount++;
+    values.push(businessId);
+    const businessIdWhereParam = paramCount++;
+    values.push(req.user.userId);
+    const userIdParam = paramCount++;
 
     const result = await pool.query(
       `UPDATE applicants 
        SET ${updates.join(', ')}
-       WHERE id = $${paramCount++} AND business_owner_id = $${paramCount++}
+       WHERE id = $${idParam} AND (business_id = $${businessIdWhereParam} OR business_owner_id = $${userIdParam})
        RETURNING id, first_name, last_name, email, phone, position, status, stage_order, notes, applied_date, created_at, updated_at`,
       values
     );
@@ -365,15 +424,28 @@ app.patch('/api/employees/:id', verifyAuth, async (req, res) => {
 // Delete applicant
 app.delete('/api/employees/:id', verifyAuth, async (req, res) => {
   try {
-    if (req.user.role !== 'business_owner') {
-      return res.status(403).json({ error: 'Only business owners can delete applicants' });
+    if (req.user.role !== 'business') {
+      return res.status(403).json({ error: 'Only business users can delete applicants' });
     }
 
     const { id } = req.params;
 
+    // Get business_id from user
+    const userResult = await pool.query(
+      'SELECT business_id FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+
+    if (userResult.rows.length === 0 || !userResult.rows[0].business_id) {
+      return res.status(403).json({ error: 'User is not associated with a business' });
+    }
+
+    const businessId = userResult.rows[0].business_id;
+
+    // Delete applicant (support both business_id and business_owner_id during migration)
     const result = await pool.query(
-      'DELETE FROM applicants WHERE id = $1 AND business_owner_id = $2 RETURNING id',
-      [id, req.user.userId]
+      'DELETE FROM applicants WHERE id = $1 AND (business_id = $2 OR business_owner_id = $3) RETURNING id',
+      [id, businessId, req.user.userId]
     );
 
     if (result.rows.length === 0) {
@@ -383,6 +455,98 @@ app.delete('/api/employees/:id', verifyAuth, async (req, res) => {
     res.json({ message: 'Applicant deleted successfully' });
   } catch (error) {
     console.error('Delete applicant error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Business location endpoints
+
+// Get all locations for the authenticated business user
+app.get('/api/business/locations', verifyAuth, async (req, res) => {
+  try {
+    if (req.user.role !== 'business') {
+      return res.status(403).json({ error: 'Only business users can access locations' });
+    }
+
+    // Get business_id from user
+    const userResult = await pool.query(
+      'SELECT business_id FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+
+    if (userResult.rows.length === 0 || !userResult.rows[0].business_id) {
+      return res.status(403).json({ error: 'User is not associated with a business' });
+    }
+
+    const businessId = userResult.rows[0].business_id;
+
+    // Get all locations for this business
+    const result = await pool.query(
+      `SELECT id, business_id, name, address, city, state, zip_code, country, 
+              phone, email, is_active, created_at, updated_at
+       FROM locations 
+       WHERE business_id = $1 
+       ORDER BY is_active DESC, name ASC`,
+      [businessId]
+    );
+
+    res.json({ locations: result.rows });
+  } catch (error) {
+    console.error('Get locations error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Create a new location for the authenticated business user
+app.post('/api/business/locations', verifyAuth, async (req, res) => {
+  try {
+    if (req.user.role !== 'business') {
+      return res.status(403).json({ error: 'Only business users can create locations' });
+    }
+
+    // Get business_id from user
+    const userResult = await pool.query(
+      'SELECT business_id FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+
+    if (userResult.rows.length === 0 || !userResult.rows[0].business_id) {
+      return res.status(403).json({ error: 'User is not associated with a business' });
+    }
+
+    const businessId = userResult.rows[0].business_id;
+
+    const { name, address, city, state, zip_code, country, phone, email, is_active } = req.body;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: 'Location name is required' });
+    }
+
+    // Create the location
+    const result = await pool.query(
+      `INSERT INTO locations (
+        business_id, name, address, city, state, zip_code, country, 
+        phone, email, is_active, created_at, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
+      RETURNING id, business_id, name, address, city, state, zip_code, country, 
+                phone, email, is_active, created_at, updated_at`,
+      [
+        businessId,
+        name.trim(),
+        address?.trim() || null,
+        city?.trim() || null,
+        state?.trim() || null,
+        zip_code?.trim() || null,
+        country?.trim() || 'United States',
+        phone?.trim() || null,
+        email?.trim() || null,
+        is_active !== undefined ? is_active : true,
+      ]
+    );
+
+    res.status(201).json({ location: result.rows[0] });
+  } catch (error) {
+    console.error('Create location error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -397,39 +561,51 @@ app.get('/api/admin/database/stats', verifyAuth, async (req, res) => {
     }
 
     // Get table information - check what tables actually exist
-    // First check which applicant-related table exists (applicants or employees)
+    // Check for all tables we care about
+    const allTableNames = ['migrations', 'users', 'businesses', 'locations', 'applicants', 'employees'];
     const tableCheckResult = await pool.query(`
       SELECT table_name 
       FROM information_schema.tables 
       WHERE table_schema = 'public' 
-        AND table_name IN ('applicants', 'employees')
-      ORDER BY table_name DESC
-      LIMIT 1
-    `);
+        AND table_name = ANY($1)
+      ORDER BY table_name
+    `, [allTableNames]);
+    
+    // Get all existing tables as a set for quick lookup
+    const existingTables = tableCheckResult.rows.map(row => row.table_name);
+    const existingTablesSet = new Set(existingTables);
     
     // Determine which table name to use (prefer applicants, fallback to employees if it exists)
     let applicantTableName = 'applicants';
-    if (tableCheckResult.rows.length > 0) {
-      const existingTable = tableCheckResult.rows[0].table_name;
-      if (existingTable === 'employees') {
-        applicantTableName = 'employees';
-        console.log('⚠️  Note: Found "employees" table. Consider renaming to "applicants" using: ALTER TABLE employees RENAME TO applicants;');
-      }
+    if (existingTablesSet.has('employees') && !existingTablesSet.has('applicants')) {
+      applicantTableName = 'employees';
+      console.log('⚠️  Note: Found "employees" table. Consider renaming to "applicants" using: ALTER TABLE employees RENAME TO applicants;');
     }
 
-    // Build list of tables to query (use the detected table name)
-    const tables = ['migrations', 'users', applicantTableName];
-    const tableStats = {};
+    // Build list of tables to query - include all standard tables that exist, plus applicant table
+    const tablesToQuery = ['migrations', 'users', 'businesses', 'locations'].filter(
+      table => existingTablesSet.has(table)
+    );
+    
+    // Always add applicant table (whether it's 'applicants' or 'employees')
+    if (existingTablesSet.has('applicants') || existingTablesSet.has('employees')) {
+      tablesToQuery.push(applicantTableName);
+    }
 
     // Map the actual table name to display name
     const tableDisplayNames = {
       'migrations': 'migrations',
       'users': 'users',
+      'businesses': 'businesses',
+      'locations': 'locations',
       'applicants': 'applicants',
       'employees': 'applicants' // Show as "applicants" in UI even if table is named "employees"
     };
 
-    for (const table of tables) {
+    const tableStats = {};
+
+    // Query each table for statistics
+    for (const table of tablesToQuery) {
       try {
         // Get row count
         const countResult = await pool.query(`SELECT COUNT(*) as count FROM ${table}`);
@@ -529,8 +705,8 @@ app.get('/api/admin/database/tables/:tableName', verifyAuth, async (req, res) =>
       // If no table found, actualTableName stays 'applicants' which will error (expected)
     }
 
-    // Whitelist allowed tables for security
-    const allowedTables = ['migrations', 'users', 'applicants', 'employees'];
+    // Whitelist allowed tables for security - include businesses and locations
+    const allowedTables = ['migrations', 'users', 'businesses', 'locations', 'applicants', 'employees'];
     if (!allowedTables.includes(actualTableName) && !allowedTables.includes(tableName)) {
       return res.status(400).json({ error: 'Invalid table name' });
     }
@@ -676,46 +852,59 @@ app.get('/api/admin/database/employees/stats', verifyAuth, async (req, res) => {
       return res.status(403).json({ error: 'Only admins can access applicant statistics' });
     }
 
-    // Check if applicants table exists
+    // Determine actual table name (applicants or employees)
     const tableCheck = await pool.query(`
-      SELECT EXISTS (
-        SELECT FROM information_schema.tables 
-        WHERE table_name = 'applicants'
-      );
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public' 
+        AND table_name IN ('applicants', 'employees')
+      ORDER BY table_name DESC
+      LIMIT 1
     `);
 
-    if (!tableCheck.rows[0]?.exists) {
+    let actualTableName = 'applicants'; // Default
+    if (tableCheck.rows.length > 0) {
+      actualTableName = tableCheck.rows[0].table_name;
+    } else {
       // Table doesn't exist yet - return empty stats
       return res.json({
         byStatus: [],
-        byBusinessOwner: [],
+        byBusiness: [],
         recentActivity: [],
         message: 'Applicants table does not exist yet. Please run migrations.',
       });
     }
 
-    // Get applicants by status
+    // Get applicants by status (using actual table name)
     const statusStats = await pool.query(`
       SELECT status, COUNT(*) as count
-      FROM applicants
+      FROM ${actualTableName}
       GROUP BY status
       ORDER BY status
     `);
 
-    // Get applicants by business owner
-    const byBusinessOwner = await pool.query(`
-      SELECT u.name as business_name, u.email, COUNT(a.id) as employee_count
-      FROM users u
-      LEFT JOIN applicants a ON u.id = a.business_owner_id
-      WHERE u.role = 'business_owner'
-      GROUP BY u.id, u.name, u.email
-      ORDER BY employee_count DESC
-    `);
+    // Get applicants by business (support both business_id and business_owner_id during migration)
+    let byBusiness;
+    try {
+      byBusiness = await pool.query(`
+        SELECT b.name as business_name, b.id as business_id, COUNT(a.id) as applicant_count
+        FROM businesses b
+        LEFT JOIN ${actualTableName} a ON b.id = a.business_id OR (a.business_owner_id IS NOT NULL AND EXISTS (
+          SELECT 1 FROM users u WHERE u.id = a.business_owner_id AND u.business_id = b.id
+        ))
+        GROUP BY b.id, b.name
+        ORDER BY applicant_count DESC
+      `);
+    } catch (err) {
+      // Fallback if businesses table doesn't exist yet
+      console.warn('Businesses table not found, using fallback query:', err);
+      byBusiness = { rows: [] };
+    }
 
-    // Get applicants by creation date (last 30 days)
+    // Get applicants by creation date (last 30 days) - using actual table name
     const recentApplicants = await pool.query(`
       SELECT DATE(created_at) as date, COUNT(*) as count
-      FROM applicants
+      FROM ${actualTableName}
       WHERE created_at >= NOW() - INTERVAL '30 days'
       GROUP BY DATE(created_at)
       ORDER BY date DESC
@@ -723,7 +912,7 @@ app.get('/api/admin/database/employees/stats', verifyAuth, async (req, res) => {
 
     res.json({
       byStatus: statusStats.rows,
-      byBusinessOwner: byBusinessOwner.rows,
+      byBusiness: byBusiness.rows,
       recentActivity: recentApplicants.rows,
     });
   } catch (error) {
@@ -732,7 +921,7 @@ app.get('/api/admin/database/employees/stats', verifyAuth, async (req, res) => {
     if (error.message && error.message.includes('does not exist')) {
       return res.json({
         byStatus: [],
-        byBusinessOwner: [],
+        byBusiness: [],
         recentActivity: [],
         message: 'Applicants table does not exist yet. Please run migrations.',
       });
@@ -755,12 +944,13 @@ app.delete('/api/admin/database/tables/:tableName/rows/:id', verifyAuth, async (
       SELECT table_name 
       FROM information_schema.tables 
       WHERE table_schema = 'public' 
-        AND table_name IN ('applicants', 'employees')
-      LIMIT 1
+        AND table_name IN ('applicants', 'employees', 'businesses', 'locations')
     `);
     
-    const actualApplicantTable = tableExistsCheck.rows.length > 0 ? tableExistsCheck.rows[0].table_name : 'applicants';
-    const allowedTables = ['migrations', 'users', 'applicants', actualApplicantTable];
+    const existingTables = tableExistsCheck.rows.map(row => row.table_name);
+    const actualApplicantTable = existingTables.includes('applicants') ? 'applicants' : 
+                                 (existingTables.includes('employees') ? 'employees' : 'applicants');
+    const allowedTables = ['migrations', 'users', 'businesses', 'locations', 'applicants', 'employees'];
     
     // Allow access if using display name (applicants) or actual table name (employees)
     if (!allowedTables.includes(tableName) && tableName !== actualApplicantTable) {

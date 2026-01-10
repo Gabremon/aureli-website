@@ -31,10 +31,10 @@ export default function ProtectedRoute({
     switch (user.role) {
       case 'admin':
         return <Navigate to="/admin" replace />;
-      case 'business_owner':
+      case 'business':
         return <Navigate to="/business-owner" replace />;
-      case 'employee':
-        return <Navigate to="/employee" replace />;
+      case 'applicant':
+        return <Navigate to="/applicant" replace />;
       default:
         return <Navigate to="/" replace />;
     }

@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 
-export type UserRole = 'business_owner' | 'employee' | 'admin';
+export type UserRole = 'business' | 'applicant' | 'admin';
 
 export interface User {
   id: number;
