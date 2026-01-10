@@ -1,18 +1,19 @@
-import { useAuth } from '../contexts/AuthContext';
-import Header from '../components/Header';
-import '../styles/Dashboard.css';
+import { useAuth } from '../../contexts/AuthContext';
+import Header from '../../components/Header';
+import '../../styles/Dashboard.css';
+import '../../styles/employee/employee.css';
 
-export default function BusinessOwnerDashboard() {
+export default function EmployeeDashboard() {
   const { user, logout } = useAuth();
 
   return (
-    <div className="dashboard-page">
+    <div className="dashboard-page employee-dashboard">
       <Header />
       <main className="dashboard-main">
         <div className="dashboard-container">
           <div className="dashboard-header">
             <div>
-              <h1 className="dashboard-title">Business Owner Dashboard</h1>
+              <h1 className="dashboard-title">Employee Dashboard</h1>
               <p className="dashboard-subtitle">
                 Welcome back, {user?.name} ({user?.email})
               </p>
@@ -24,23 +25,23 @@ export default function BusinessOwnerDashboard() {
 
           <div className="dashboard-content">
             <div className="dashboard-section">
-              <h2 className="section-title">Your Business</h2>
+              <h2 className="section-title">Your Account</h2>
               <div className="features-grid">
                 <div className="feature-card">
-                  <h3>Hiring Management</h3>
-                  <p>Manage your hiring needs and view predictions</p>
+                  <h3>Profile</h3>
+                  <p>View and update your profile information</p>
                 </div>
                 <div className="feature-card">
-                  <h3>Employee Management</h3>
-                  <p>View and manage your employees</p>
+                  <h3>Documents</h3>
+                  <p>Access your documents and forms</p>
                 </div>
                 <div className="feature-card">
-                  <h3>Analytics</h3>
-                  <p>View hiring analytics and workforce insights</p>
+                  <h3>Schedule</h3>
+                  <p>View your work schedule and availability</p>
                 </div>
                 <div className="feature-card">
-                  <h3>Settings</h3>
-                  <p>Manage your business profile and preferences</p>
+                  <h3>Resources</h3>
+                  <p>Access employee resources and tools</p>
                 </div>
               </div>
             </div>
@@ -48,10 +49,10 @@ export default function BusinessOwnerDashboard() {
             <div className="dashboard-section">
               <h2 className="section-title">Quick Actions</h2>
               <div className="actions-grid">
-                <button className="action-button">View Hiring Needs</button>
-                <button className="action-button">Manage Employees</button>
-                <button className="action-button">View Reports</button>
-                <button className="action-button">Business Settings</button>
+                <button className="action-button">Update Profile</button>
+                <button className="action-button">View Documents</button>
+                <button className="action-button">View Schedule</button>
+                <button className="action-button">Contact HR</button>
               </div>
             </div>
           </div>

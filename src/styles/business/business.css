@@ -1,0 +1,18 @@
+/* Business owner-specific styles */
+
+.business-dashboard {
+  /* Business dashboard specific overrides */
+}
+
+.business-dashboard .feature-card {
+  border-left: 4px solid #2563eb; /* Blue accent for business */
+}
+
+.business-dashboard .action-button {
+  background: #2563eb;
+}
+
+.business-dashboard .action-button:hover {
+  background: #1d4ed8;
+}
+

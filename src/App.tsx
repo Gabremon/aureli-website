@@ -9,9 +9,9 @@ import I9Center from "./pages/I9Center";
 import Onboard from "./pages/Onboard";
 import Compliance from "./pages/Compliance";
 import Login from "./pages/Login";
-import AdminDashboard from "./pages/AdminDashboard";
-import BusinessOwnerDashboard from "./pages/BusinessOwnerDashboard";
-import EmployeeDashboard from "./pages/EmployeeDashboard";
+import { AdminDashboard } from "./pages/admin";
+import { BusinessOwnerDashboard } from "./pages/business";
+import { EmployeeDashboard } from "./pages/employee";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 

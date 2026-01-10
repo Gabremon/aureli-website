@@ -1,0 +1,18 @@
+/* Admin-specific styles */
+
+.admin-dashboard {
+  /* Admin dashboard specific overrides */
+}
+
+.admin-dashboard .feature-card {
+  border-left: 4px solid #dc2626; /* Red accent for admin */
+}
+
+.admin-dashboard .action-button {
+  background: #dc2626;
+}
+
+.admin-dashboard .action-button:hover {
+  background: #b91c1c;
+}
+

@@ -1,0 +1,18 @@
+/* Employee-specific styles */
+
+.employee-dashboard {
+  /* Employee dashboard specific overrides */
+}
+
+.employee-dashboard .feature-card {
+  border-left: 4px solid #059669; /* Green accent for employee */
+}
+
+.employee-dashboard .action-button {
+  background: #059669;
+}
+
+.employee-dashboard .action-button:hover {
+  background: #047857;
+}
+
