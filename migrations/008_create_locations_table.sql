@@ -10,8 +10,6 @@ CREATE TABLE IF NOT EXISTS locations (
     state VARCHAR(50),
     zip_code VARCHAR(20),
     country VARCHAR(100) DEFAULT 'United States',
-    phone VARCHAR(50),
-    email VARCHAR(255),
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

@@ -483,7 +483,7 @@ app.get('/api/business/locations', verifyAuth, async (req, res) => {
     // Get all locations for this business
     const result = await pool.query(
       `SELECT id, business_id, name, address, city, state, zip_code, country, 
-              phone, email, is_active, created_at, updated_at
+              is_active, created_at, updated_at
        FROM locations 
        WHERE business_id = $1 
        ORDER BY is_active DESC, name ASC`,
@@ -516,7 +516,7 @@ app.post('/api/business/locations', verifyAuth, async (req, res) => {
 
     const businessId = userResult.rows[0].business_id;
 
-    const { name, address, city, state, zip_code, country, phone, email, is_active } = req.body;
+    const { name, address, city, state, zip_code, country, is_active } = req.body;
 
     if (!name || !name.trim()) {
       return res.status(400).json({ error: 'Location name is required' });
@@ -526,10 +526,10 @@ app.post('/api/business/locations', verifyAuth, async (req, res) => {
     const result = await pool.query(
       `INSERT INTO locations (
         business_id, name, address, city, state, zip_code, country, 
-        phone, email, is_active, created_at, updated_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
+        is_active, created_at, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
       RETURNING id, business_id, name, address, city, state, zip_code, country, 
-                phone, email, is_active, created_at, updated_at`,
+                is_active, created_at, updated_at`,
       [
         businessId,
         name.trim(),
@@ -538,8 +538,6 @@ app.post('/api/business/locations', verifyAuth, async (req, res) => {
         state?.trim() || null,
         zip_code?.trim() || null,
         country?.trim() || 'United States',
-        phone?.trim() || null,
-        email?.trim() || null,
         is_active !== undefined ? is_active : true,
       ]
     );

@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS businesses (
     industry VARCHAR(255),
     website VARCHAR(255),
     phone VARCHAR(50),
+    email VARCHAR(255),
     address TEXT,
     city VARCHAR(255),
     state VARCHAR(50),

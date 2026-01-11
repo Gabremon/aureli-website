@@ -13,20 +13,26 @@ interface Location {
   state: string | null;
   zip_code: string | null;
   country: string | null;
-  phone: string | null;
-  email: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
 }
 
+interface LocationGroup {
+  state: string;
+  locations: Location[];
+}
+
 export default function Locations() {
-  const { user, token } = useAuth();
+  const { token } = useAuth();
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
 
   const [newLocation, setNewLocation] = useState({
     name: '',
@@ -35,8 +41,6 @@ export default function Locations() {
     state: '',
     zip_code: '',
     country: 'United States',
-    phone: '',
-    email: '',
     is_active: true,
   });
 
@@ -100,8 +104,6 @@ export default function Locations() {
         throw new Error(errorData.error || 'Failed to create location');
       }
 
-      const data = await response.json();
-      
       // Refresh locations list
       await fetchLocations();
       
@@ -113,8 +115,6 @@ export default function Locations() {
         state: '',
         zip_code: '',
         country: 'United States',
-        phone: '',
-        email: '',
         is_active: true,
       });
       setShowAddModal(false);
@@ -126,14 +126,50 @@ export default function Locations() {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+  // Group locations by state (or country if no state)
+  const groupLocationsByState = (): LocationGroup[] => {
+    const grouped: { [key: string]: Location[] } = {};
+    
+    locations.forEach(location => {
+      const groupKey = location.state || location.country || 'Other';
+      if (!grouped[groupKey]) {
+        grouped[groupKey] = [];
+      }
+      grouped[groupKey].push(location);
     });
+
+    return Object.entries(grouped)
+      .map(([state, locs]) => ({ state, locations: locs }))
+      .sort((a, b) => a.state.localeCompare(b.state));
+  };
+
+  // Filter location groups based on search query
+  const filteredLocationGroups = (): LocationGroup[] => {
+    const groups = groupLocationsByState();
+    if (!searchQuery.trim()) {
+      return groups;
+    }
+
+    const query = searchQuery.toLowerCase();
+    return groups.filter(group => {
+      const groupMatches = group.state.toLowerCase().includes(query);
+      const locationMatches = group.locations.some(loc => 
+        loc.name.toLowerCase().includes(query) ||
+        loc.city?.toLowerCase().includes(query) ||
+        loc.address?.toLowerCase().includes(query)
+      );
+      return groupMatches || locationMatches;
+    });
+  };
+
+  const toggleGroup = (state: string) => {
+    const newExpanded = new Set(expandedGroups);
+    if (newExpanded.has(state)) {
+      newExpanded.delete(state);
+    } else {
+      newExpanded.add(state);
+    }
+    setExpandedGroups(newExpanded);
   };
 
   if (loading) {
@@ -154,25 +190,33 @@ export default function Locations() {
     );
   }
 
+  const locationGroups = filteredLocationGroups();
+
   return (
     <div className="dashboard-page business-dashboard">
       <BusinessHeader />
       <main className="dashboard-main">
         <div className="dashboard-container">
           <div className="locations-container">
-            <div className="locations-header">
-              <div>
-                <h1 className="dashboard-title">Locations</h1>
-                <p className="dashboard-subtitle">
-                  Manage your business locations
-                </p>
+            <div className="locations-page-header">
+              <h1 className="locations-page-title">Locations</h1>
+              <div className="locations-header-actions">
+                {locations.length === 0 ? (
+                  <button
+                    onClick={() => setShowAddModal(true)}
+                    className="button-primary add-first-location-button"
+                  >
+                    Add your first location
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setViewMode(viewMode === 'list' ? 'map' : 'list')}
+                    className="map-view-button"
+                  >
+                    Switch to Map View
+                  </button>
+                )}
               </div>
-              <button
-                onClick={() => setShowAddModal(true)}
-                className="button-primary add-location-button"
-              >
-                + Add Location
-              </button>
             </div>
 
             {error && (
@@ -181,64 +225,127 @@ export default function Locations() {
               </div>
             )}
 
-            {locations.length === 0 ? (
-              <div className="no-locations-container">
-                <div className="empty-state">
-                  <div className="empty-state-icon">📍</div>
-                  <h2>No Locations Yet</h2>
-                  <p>Get started by adding your first location.</p>
-                  <button
-                    onClick={() => setShowAddModal(true)}
-                    className="button-primary"
-                  >
-                    + Add Your First Location
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="locations-grid">
-                {locations.map((location) => (
-                  <div key={location.id} className="location-card">
-                    <div className="location-card-header">
-                      <h3 className="location-name">{location.name}</h3>
-                      <span className={`location-badge ${location.is_active ? 'active' : 'inactive'}`}>
-                        {location.is_active ? 'Active' : 'Inactive'}
-                      </span>
-                    </div>
-                    <div className="location-card-body">
-                      {location.address && (
-                        <p className="location-info">
-                          <strong>Address:</strong> {location.address}
-                        </p>
-                      )}
-                      {(location.city || location.state || location.zip_code) && (
-                        <p className="location-info">
-                          {[location.city, location.state, location.zip_code].filter(Boolean).join(', ')}
-                        </p>
-                      )}
-                      {location.country && (
-                        <p className="location-info">
-                          <strong>Country:</strong> {location.country}
-                        </p>
-                      )}
-                      {location.phone && (
-                        <p className="location-info">
-                          <strong>Phone:</strong> {location.phone}
-                        </p>
-                      )}
-                      {location.email && (
-                        <p className="location-info">
-                          <strong>Email:</strong> {location.email}
-                        </p>
-                      )}
-                    </div>
-                    <div className="location-card-footer">
-                      <span className="location-date">
-                        Created: {formatDate(location.created_at)}
-                      </span>
+            {viewMode === 'list' ? (
+              <>
+                {locations.length === 0 ? (
+                  <div className="no-locations-container">
+                    <div className="empty-state">
+                      <div className="empty-state-icon">📍</div>
+                      <h2>No Locations Yet</h2>
+                      <p>Get started by adding your first location using the button above.</p>
                     </div>
                   </div>
-                ))}
+                ) : (
+                  <>
+                    <div className="location-groups-section">
+                      <h2 className="location-groups-title">
+                        Location Groups ({locationGroups.length})
+                      </h2>
+                      <div className="location-groups-search">
+                        <input
+                          type="text"
+                          placeholder="Search Location Groups"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="search-input"
+                        />
+                        <span className="search-icon">🔍</span>
+                      </div>
+                    </div>
+
+                    {locationGroups.length === 0 ? (
+                      <div className="no-groups-message">
+                        <p>No location groups found matching your search.</p>
+                        {searchQuery && (
+                          <button
+                            onClick={() => setSearchQuery('')}
+                            className="button-secondary"
+                            style={{ marginTop: '0.5rem' }}
+                          >
+                            Clear Search
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="location-groups-list">
+                        {locationGroups.map((group) => {
+                          const isExpanded = expandedGroups.has(group.state);
+                          
+                          return (
+                            <div key={group.state} className="location-group-card">
+                              <div
+                                className="location-group-header"
+                                onClick={() => toggleGroup(group.state)}
+                              >
+                                <span className="location-group-name">{group.state}</span>
+                                <div className="location-group-right">
+                                  <span className="location-group-count">
+                                    {group.locations.length} {group.locations.length === 1 ? 'location' : 'locations'}
+                                  </span>
+                                  <span className={`location-group-arrow ${isExpanded ? 'expanded' : ''}`}>
+                                    →
+                                  </span>
+                                </div>
+                              </div>
+
+                              {isExpanded && (
+                                <div className="location-group-content">
+                                  {group.locations.map((location) => (
+                                    <div key={location.id} className="location-item">
+                                      <div className="location-item-main">
+                                        <div className="location-item-info">
+                                          <span className="location-item-name">{location.name}</span>
+                                          {location.city && (
+                                            <span className="location-item-city">{location.city}</span>
+                                          )}
+                                        </div>
+                                        <span className={`location-item-badge ${location.is_active ? 'active' : 'inactive'}`}>
+                                          {location.is_active ? 'Active' : 'Inactive'}
+                                        </span>
+                                      </div>
+                                      {location.address && (
+                                        <div className="location-item-details">
+                                          <span className="location-detail">{location.address}</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                  <div className="location-group-actions">
+                                    <button
+                                      onClick={() => setShowAddModal(true)}
+                                      className="add-location-inline-button"
+                                    >
+                                      + Add Location to {group.state}
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    <div className="locations-actions-bar">
+                      <button
+                        onClick={() => setShowAddModal(true)}
+                        className="button-primary add-location-button"
+                      >
+                        + Add Location
+                      </button>
+                    </div>
+                  </>
+                )}
+              </>
+            ) : (
+              <div className="map-view-placeholder">
+                <p>Map view coming soon!</p>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className="button-secondary"
+                >
+                  Switch to List View
+                </button>
               </div>
             )}
           </div>
@@ -319,29 +426,6 @@ export default function Locations() {
                   onChange={(e) => setNewLocation({ ...newLocation, country: e.target.value })}
                   placeholder="Country"
                 />
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="phone">Phone</label>
-                  <input
-                    id="phone"
-                    type="tel"
-                    value={newLocation.phone}
-                    onChange={(e) => setNewLocation({ ...newLocation, phone: e.target.value })}
-                    placeholder="(555) 123-4567"
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="email">Email</label>
-                  <input
-                    id="email"
-                    type="email"
-                    value={newLocation.email}
-                    onChange={(e) => setNewLocation({ ...newLocation, email: e.target.value })}
-                    placeholder="location@example.com"
-                  />
-                </div>
               </div>
 
               <div className="form-group">
