@@ -549,6 +549,309 @@ app.post('/api/business/locations', verifyAuth, async (req, res) => {
   }
 });
 
+// Business openings endpoints
+
+// Get all openings for the authenticated business user
+app.get('/api/business/openings', verifyAuth, async (req, res) => {
+  try {
+    if (req.user.role !== 'business') {
+      return res.status(403).json({ error: 'Only business users can access openings' });
+    }
+
+    // Get business_id from user
+    const userResult = await pool.query(
+      'SELECT business_id FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+
+    if (userResult.rows.length === 0 || !userResult.rows[0].business_id) {
+      return res.status(403).json({ error: 'User is not associated with a business' });
+    }
+
+    const businessId = userResult.rows[0].business_id;
+
+    // Get all openings with location and business info, and count applications
+    const result = await pool.query(
+      `SELECT 
+        o.id,
+        o.business_id,
+        o.location_id,
+        o.title,
+        o.position_type,
+        o.created_at,
+        o.updated_at,
+        b.name as business_name,
+        l.name as location_name,
+        l.address as location_address,
+        l.city as location_city,
+        l.state as location_state,
+        l.zip_code as location_zip_code,
+        l.country as location_country,
+        COUNT(DISTINCT a.id) as application_count
+      FROM openings o
+      INNER JOIN businesses b ON o.business_id = b.id
+      INNER JOIN locations l ON o.location_id = l.id
+      LEFT JOIN applicants a ON a.business_id = o.business_id 
+        AND LOWER(TRIM(a.position)) = LOWER(TRIM(o.title))
+      WHERE o.business_id = $1
+      GROUP BY o.id, o.business_id, o.location_id, o.title, o.position_type, 
+               o.created_at, o.updated_at, b.name, l.name, l.address, l.city, 
+               l.state, l.zip_code, l.country
+      ORDER BY o.created_at DESC`,
+      [businessId]
+    );
+
+    res.json({ openings: result.rows });
+  } catch (error) {
+    console.error('Get openings error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Create a new opening for the authenticated business user
+app.post('/api/business/openings', verifyAuth, async (req, res) => {
+  try {
+    if (req.user.role !== 'business') {
+      return res.status(403).json({ error: 'Only business users can create openings' });
+    }
+
+    // Get business_id from user
+    const userResult = await pool.query(
+      'SELECT business_id FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+
+    if (userResult.rows.length === 0 || !userResult.rows[0].business_id) {
+      return res.status(403).json({ error: 'User is not associated with a business' });
+    }
+
+    const businessId = userResult.rows[0].business_id;
+
+    const { title, location_id, position_type } = req.body;
+
+    if (!title || !title.trim()) {
+      return res.status(400).json({ error: 'Opening title is required' });
+    }
+
+    if (!location_id) {
+      return res.status(400).json({ error: 'Location is required' });
+    }
+
+    // Verify location belongs to this business
+    const locationCheck = await pool.query(
+      'SELECT id FROM locations WHERE id = $1 AND business_id = $2',
+      [location_id, businessId]
+    );
+
+    if (locationCheck.rows.length === 0) {
+      return res.status(403).json({ error: 'Location not found or does not belong to your business' });
+    }
+
+    // Create the opening
+    const result = await pool.query(
+      `INSERT INTO openings (business_id, location_id, title, position_type, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, NOW(), NOW())
+       RETURNING id, business_id, location_id, title, position_type, created_at, updated_at`,
+      [businessId, location_id, title.trim(), position_type?.trim() || null]
+    );
+
+    // Get full opening details with location and business info
+    const openingDetails = await pool.query(
+      `SELECT 
+        o.id,
+        o.business_id,
+        o.location_id,
+        o.title,
+        o.position_type,
+        o.created_at,
+        o.updated_at,
+        b.name as business_name,
+        l.name as location_name,
+        l.address as location_address,
+        l.city as location_city,
+        l.state as location_state,
+        l.zip_code as location_zip_code,
+        l.country as location_country,
+        0 as application_count
+      FROM openings o
+      INNER JOIN businesses b ON o.business_id = b.id
+      INNER JOIN locations l ON o.location_id = l.id
+      WHERE o.id = $1`,
+      [result.rows[0].id]
+    );
+
+    res.status(201).json({ opening: openingDetails.rows[0] });
+  } catch (error) {
+    console.error('Create opening error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Business profile endpoints
+
+// Get business profile for the authenticated business user
+app.get('/api/business/profile', verifyAuth, async (req, res) => {
+  try {
+    if (req.user.role !== 'business') {
+      return res.status(403).json({ error: 'Only business users can access business profile' });
+    }
+
+    // Get business_id from user
+    const userResult = await pool.query(
+      'SELECT business_id FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+
+    if (userResult.rows.length === 0 || !userResult.rows[0].business_id) {
+      return res.status(403).json({ error: 'User is not associated with a business' });
+    }
+
+    const businessId = userResult.rows[0].business_id;
+
+    // Get user email to set/verify business email
+    const userEmailResult = await pool.query(
+      'SELECT email FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+    const userEmail = userEmailResult.rows[0]?.email;
+
+    // Get business information
+    const result = await pool.query(
+      `SELECT id, name, industry, website, phone, email, address, city, state, 
+              zip_code, country, created_at, updated_at
+       FROM businesses 
+       WHERE id = $1`,
+      [businessId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Business not found' });
+    }
+
+    const business = result.rows[0];
+    
+    // Ensure business email matches user email (auto-update if different)
+    if (userEmail && business.email !== userEmail) {
+      await pool.query(
+        'UPDATE businesses SET email = $1 WHERE id = $2',
+        [userEmail, businessId]
+      );
+      business.email = userEmail;
+    }
+
+    res.json({ business });
+  } catch (error) {
+    console.error('Get business profile error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Update business profile for the authenticated business user
+app.patch('/api/business/profile', verifyAuth, async (req, res) => {
+  try {
+    if (req.user.role !== 'business') {
+      return res.status(403).json({ error: 'Only business users can update business profile' });
+    }
+
+    // Get business_id from user
+    const userResult = await pool.query(
+      'SELECT business_id FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+
+    if (userResult.rows.length === 0 || !userResult.rows[0].business_id) {
+      return res.status(403).json({ error: 'User is not associated with a business' });
+    }
+
+    const businessId = userResult.rows[0].business_id;
+
+    // Get user email to set business email (email is not editable - always matches user email)
+    const userEmailResult = await pool.query(
+      'SELECT email FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+    const userEmail = userEmailResult.rows[0]?.email;
+
+    const { name, industry, website, phone, address, city, state, zip_code, country } = req.body;
+    // Note: email is intentionally excluded - it's automatically set from the logged-in user
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: 'Business name is required' });
+    }
+
+    // Build dynamic update query
+    const updates = [];
+    const values = [];
+    let paramCount = 1;
+
+    updates.push(`name = $${paramCount++}`);
+    values.push(name.trim());
+
+    // Email is always set from the logged-in user's email (not editable)
+    if (userEmail) {
+      updates.push(`email = $${paramCount++}`);
+      values.push(userEmail);
+    }
+
+    if (industry !== undefined) {
+      updates.push(`industry = $${paramCount++}`);
+      values.push(industry?.trim() || null);
+    }
+    if (website !== undefined) {
+      updates.push(`website = $${paramCount++}`);
+      values.push(website?.trim() || null);
+    }
+    if (phone !== undefined) {
+      updates.push(`phone = $${paramCount++}`);
+      values.push(phone?.trim() || null);
+    }
+    if (address !== undefined) {
+      updates.push(`address = $${paramCount++}`);
+      values.push(address?.trim() || null);
+    }
+    if (city !== undefined) {
+      updates.push(`city = $${paramCount++}`);
+      values.push(city?.trim() || null);
+    }
+    if (state !== undefined) {
+      updates.push(`state = $${paramCount++}`);
+      values.push(state?.trim() || null);
+    }
+    if (zip_code !== undefined) {
+      updates.push(`zip_code = $${paramCount++}`);
+      values.push(zip_code?.trim() || null);
+    }
+    if (country !== undefined) {
+      updates.push(`country = $${paramCount++}`);
+      values.push(country?.trim() || null);
+    }
+
+    updates.push(`updated_at = CURRENT_TIMESTAMP`);
+
+    values.push(businessId);
+    const businessIdParam = paramCount++;
+
+    // Update business
+    const result = await pool.query(
+      `UPDATE businesses 
+       SET ${updates.join(', ')}
+       WHERE id = $${businessIdParam}
+       RETURNING id, name, industry, website, phone, email, address, city, state, 
+                 zip_code, country, created_at, updated_at`,
+      values
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Business not found' });
+    }
+
+    res.json({ business: result.rows[0] });
+  } catch (error) {
+    console.error('Update business profile error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Admin endpoints for database management
 
 // Get database statistics and table information

@@ -12,9 +12,9 @@ export default function BusinessHeader() {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   const businessNavLinks = [
-    { label: "Dashboard", path: "/business-owner" },
+    { label: "Openings", path: "/business-owner" },
     { label: "Locations", path: "/business-owner/locations" },
-    { label: "Applicants", path: "/business-owner" }, // Will show the pipeline on dashboard
+    { label: "Profile", path: "/business-owner/profile" },
   ];
 
   useEffect(() => {

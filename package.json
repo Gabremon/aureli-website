@@ -19,7 +19,8 @@
     "diagnose:db": "bash scripts/diagnose-db.sh",
     "verify:user": "node scripts/verify-user.js",
     "debug:env": "node scripts/debug-env.js",
-    "test:external": "node scripts/test-external-connection.js"
+    "test:external": "node scripts/test-external-connection.js",
+    "fix:test-business": "node scripts/ensure-test-business-linked.js"
   },
   "devDependencies": {
     "@types/react": "^19.2.2",

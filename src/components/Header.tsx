@@ -26,9 +26,7 @@ export default function Header() {
       case 'admin':
         return '/admin';
       case 'business':
-        // Check if location is selected, if not go to location selection
-        const selectedLocationId = localStorage.getItem('selectedLocationId') || sessionStorage.getItem('selectedLocationId');
-        return selectedLocationId ? '/business-owner' : '/business-owner/location-selection';
+        return '/business-owner';
       case 'applicant':
         return '/applicant';
       default:

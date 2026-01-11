@@ -1,9 +1,63 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import BusinessHeader from '../../components/BusinessHeader';
 import '../../styles/Dashboard.css';
 import '../../styles/business/business.css';
 import './Locations.css';
+
+// US States with abbreviations and full names
+const US_STATES = [
+  { abbreviation: 'AL', name: 'Alabama' },
+  { abbreviation: 'AK', name: 'Alaska' },
+  { abbreviation: 'AZ', name: 'Arizona' },
+  { abbreviation: 'AR', name: 'Arkansas' },
+  { abbreviation: 'CA', name: 'California' },
+  { abbreviation: 'CO', name: 'Colorado' },
+  { abbreviation: 'CT', name: 'Connecticut' },
+  { abbreviation: 'DE', name: 'Delaware' },
+  { abbreviation: 'FL', name: 'Florida' },
+  { abbreviation: 'GA', name: 'Georgia' },
+  { abbreviation: 'HI', name: 'Hawaii' },
+  { abbreviation: 'ID', name: 'Idaho' },
+  { abbreviation: 'IL', name: 'Illinois' },
+  { abbreviation: 'IN', name: 'Indiana' },
+  { abbreviation: 'IA', name: 'Iowa' },
+  { abbreviation: 'KS', name: 'Kansas' },
+  { abbreviation: 'KY', name: 'Kentucky' },
+  { abbreviation: 'LA', name: 'Louisiana' },
+  { abbreviation: 'ME', name: 'Maine' },
+  { abbreviation: 'MD', name: 'Maryland' },
+  { abbreviation: 'MA', name: 'Massachusetts' },
+  { abbreviation: 'MI', name: 'Michigan' },
+  { abbreviation: 'MN', name: 'Minnesota' },
+  { abbreviation: 'MS', name: 'Mississippi' },
+  { abbreviation: 'MO', name: 'Missouri' },
+  { abbreviation: 'MT', name: 'Montana' },
+  { abbreviation: 'NE', name: 'Nebraska' },
+  { abbreviation: 'NV', name: 'Nevada' },
+  { abbreviation: 'NH', name: 'New Hampshire' },
+  { abbreviation: 'NJ', name: 'New Jersey' },
+  { abbreviation: 'NM', name: 'New Mexico' },
+  { abbreviation: 'NY', name: 'New York' },
+  { abbreviation: 'NC', name: 'North Carolina' },
+  { abbreviation: 'ND', name: 'North Dakota' },
+  { abbreviation: 'OH', name: 'Ohio' },
+  { abbreviation: 'OK', name: 'Oklahoma' },
+  { abbreviation: 'OR', name: 'Oregon' },
+  { abbreviation: 'PA', name: 'Pennsylvania' },
+  { abbreviation: 'RI', name: 'Rhode Island' },
+  { abbreviation: 'SC', name: 'South Carolina' },
+  { abbreviation: 'SD', name: 'South Dakota' },
+  { abbreviation: 'TN', name: 'Tennessee' },
+  { abbreviation: 'TX', name: 'Texas' },
+  { abbreviation: 'UT', name: 'Utah' },
+  { abbreviation: 'VT', name: 'Vermont' },
+  { abbreviation: 'VA', name: 'Virginia' },
+  { abbreviation: 'WA', name: 'Washington' },
+  { abbreviation: 'WV', name: 'West Virginia' },
+  { abbreviation: 'WI', name: 'Wisconsin' },
+  { abbreviation: 'WY', name: 'Wyoming' },
+];
 
 interface Location {
   id: number;
@@ -33,6 +87,9 @@ export default function Locations() {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+  const [stateDropdownOpen, setStateDropdownOpen] = useState(false);
+  const [stateSearchQuery, setStateSearchQuery] = useState('');
+  const stateDropdownRef = useRef<HTMLDivElement>(null);
 
   const [newLocation, setNewLocation] = useState({
     name: '',
@@ -117,6 +174,8 @@ export default function Locations() {
         country: 'United States',
         is_active: true,
       });
+      setStateSearchQuery('');
+      setStateDropdownOpen(false);
       setShowAddModal(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create location');
@@ -171,6 +230,46 @@ export default function Locations() {
     }
     setExpandedGroups(newExpanded);
   };
+
+  // Filter states based on search query
+  const filteredStates = US_STATES.filter(state => {
+    const query = stateSearchQuery.toUpperCase();
+    return (
+      state.abbreviation.toUpperCase().includes(query) ||
+      state.name.toUpperCase().includes(query)
+    );
+  });
+
+  // Handle state selection
+  const handleStateSelect = (abbreviation: string) => {
+    setNewLocation({ ...newLocation, state: abbreviation });
+    setStateSearchQuery(abbreviation);
+    setStateDropdownOpen(false);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (stateDropdownRef.current && !stateDropdownRef.current.contains(event.target as Node)) {
+        setStateDropdownOpen(false);
+      }
+    };
+
+    if (stateDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [stateDropdownOpen]);
+
+  // Update search query when state changes
+  useEffect(() => {
+    if (newLocation.state && !stateDropdownOpen) {
+      setStateSearchQuery(newLocation.state);
+    }
+  }, [newLocation.state, stateDropdownOpen]);
 
   if (loading) {
     return (
@@ -354,11 +453,19 @@ export default function Locations() {
 
       {/* Add Location Modal */}
       {showAddModal && (
-        <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
+        <div className="modal-overlay" onClick={() => {
+          setShowAddModal(false);
+          setStateSearchQuery('');
+          setStateDropdownOpen(false);
+        }}>
           <div className="modal-content location-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Add New Location</h3>
-              <button className="modal-close" onClick={() => setShowAddModal(false)}>×</button>
+              <button className="modal-close" onClick={() => {
+                setShowAddModal(false);
+                setStateSearchQuery('');
+                setStateDropdownOpen(false);
+              }}>×</button>
             </div>
             <div className="modal-body">
               <div className="form-group">
@@ -397,13 +504,52 @@ export default function Locations() {
                 </div>
                 <div className="form-group">
                   <label htmlFor="state">State</label>
-                  <input
-                    id="state"
-                    type="text"
-                    value={newLocation.state}
-                    onChange={(e) => setNewLocation({ ...newLocation, state: e.target.value })}
-                    placeholder="State"
-                  />
+                  <div className="state-dropdown-container" ref={stateDropdownRef}>
+                    <input
+                      id="state"
+                      type="text"
+                      value={stateSearchQuery}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setStateSearchQuery(value);
+                        setStateDropdownOpen(true);
+                        // If user types a valid abbreviation, select it
+                        const matchedState = US_STATES.find(
+                          s => s.abbreviation.toUpperCase() === value.toUpperCase().trim()
+                        );
+                        if (matchedState) {
+                          setNewLocation({ ...newLocation, state: matchedState.abbreviation });
+                        } else if (value.length === 0) {
+                          setNewLocation({ ...newLocation, state: '' });
+                        }
+                      }}
+                      onFocus={() => setStateDropdownOpen(true)}
+                      placeholder="Type to search (e.g., CA)"
+                      autoComplete="off"
+                    />
+                    {stateDropdownOpen && (
+                      <div className="state-dropdown">
+                        {filteredStates.length > 0 ? (
+                          filteredStates.map((state) => (
+                            <div
+                              key={state.abbreviation}
+                              className={`state-dropdown-item ${
+                                newLocation.state === state.abbreviation ? 'selected' : ''
+                              }`}
+                              onClick={() => handleStateSelect(state.abbreviation)}
+                            >
+                              <span className="state-abbreviation">{state.abbreviation}</span>
+                              <span className="state-name">{state.name}</span>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="state-dropdown-item no-results">
+                            No states found
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="form-group">
                   <label htmlFor="zip_code">ZIP Code</label>
@@ -442,7 +588,11 @@ export default function Locations() {
             <div className="modal-footer">
               <button
                 className="button-secondary"
-                onClick={() => setShowAddModal(false)}
+                onClick={() => {
+                  setShowAddModal(false);
+                  setStateSearchQuery('');
+                  setStateDropdownOpen(false);
+                }}
                 disabled={submitting}
               >
                 Cancel

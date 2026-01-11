@@ -10,7 +10,7 @@ import Onboard from "./pages/Onboard";
 import Compliance from "./pages/Compliance";
 import Login from "./pages/Login";
 import { AdminDashboard } from "./pages/admin";
-import { BusinessOwnerDashboard, LocationSelection, Locations } from "./pages/business";
+import { BusinessOwnerDashboard, LocationSelection, Locations, Profile } from "./pages/business";
 import { EmployeeDashboard } from "./pages/employee";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
@@ -629,6 +629,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={['business']}>
             <Locations />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/business-owner/profile"
+        element={
+          <ProtectedRoute allowedRoles={['business']}>
+            <Profile />
           </ProtectedRoute>
         }
       />

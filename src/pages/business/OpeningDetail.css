@@ -1,0 +1,119 @@
+/* Opening Detail Page Styles */
+
+.opening-detail-container {
+  padding: 1.5rem 2rem;
+  max-width: 100%;
+}
+
+.opening-detail-loading,
+.opening-detail-error {
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+}
+
+.opening-detail-error h2 {
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.opening-detail-error p {
+  margin-bottom: 1.5rem;
+}
+
+.opening-detail-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #3b82f6;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  margin-bottom: 1rem;
+  transition: color 0.2s ease;
+}
+
+.back-button:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.opening-detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.opening-detail-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.opening-detail-meta {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.opening-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.opening-meta-label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.opening-meta-value {
+  color: #111827;
+  font-weight: 600;
+}
+
+.opening-meta-location {
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.opening-pipeline-container {
+  margin-top: 1.5rem;
+}
+
+.button-primary {
+  padding: 0.625rem 1.25rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.button-primary:hover {
+  background: #2563eb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .opening-detail-container {
+    padding: 1rem;
+  }
+
+  .opening-detail-meta {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+

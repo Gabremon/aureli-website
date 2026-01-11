@@ -19,13 +19,7 @@ export default function Login() {
           navigate('/admin');
           break;
         case 'business':
-          // Check if location is selected, if not go to location selection
-          const selectedLocationId = localStorage.getItem('selectedLocationId') || sessionStorage.getItem('selectedLocationId');
-          if (selectedLocationId) {
-            navigate('/business-owner');
-          } else {
-            navigate('/business-owner/location-selection');
-          }
+          navigate('/business-owner');
           break;
         case 'applicant':
           navigate('/applicant');
