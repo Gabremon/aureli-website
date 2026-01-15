@@ -687,6 +687,250 @@ app.post('/api/business/openings', verifyAuth, async (req, res) => {
   }
 });
 
+// Get applicants for a specific opening
+app.get('/api/business/openings/:id/applicants', verifyAuth, async (req, res) => {
+  try {
+    if (req.user.role !== 'business') {
+      return res.status(403).json({ error: 'Only business users can access applicants' });
+    }
+
+    // Get business_id from user
+    const userResult = await pool.query(
+      'SELECT business_id FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+
+    if (userResult.rows.length === 0 || !userResult.rows[0].business_id) {
+      return res.status(403).json({ error: 'User is not associated with a business' });
+    }
+
+    const businessId = userResult.rows[0].business_id;
+    const openingId = parseInt(req.params.id);
+
+    // Verify opening belongs to this business
+    const openingCheck = await pool.query(
+      'SELECT title FROM openings WHERE id = $1 AND business_id = $2',
+      [openingId, businessId]
+    );
+
+    if (openingCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Opening not found' });
+    }
+
+    const openingTitle = openingCheck.rows[0].title;
+
+    // Get applicants for this opening (matching by position/opening title)
+    const result = await pool.query(
+      `SELECT id, first_name, last_name, email, phone, position, status, 
+              stage_order, notes, applied_date, created_at, updated_at
+       FROM applicants 
+       WHERE business_id = $1 
+         AND LOWER(TRIM(position)) = LOWER(TRIM($2))
+       ORDER BY status, stage_order ASC, created_at DESC`,
+      [businessId, openingTitle]
+    );
+
+    res.json({ applicants: result.rows });
+  } catch (error) {
+    console.error('Get opening applicants error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Business positions endpoints
+
+// Get all positions for the authenticated business user
+app.get('/api/business/positions', verifyAuth, async (req, res) => {
+  try {
+    if (req.user.role !== 'business') {
+      return res.status(403).json({ error: 'Only business users can access positions' });
+    }
+
+    // Get business_id from user
+    const userResult = await pool.query(
+      'SELECT business_id FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+
+    if (userResult.rows.length === 0 || !userResult.rows[0].business_id) {
+      return res.status(403).json({ error: 'User is not associated with a business' });
+    }
+
+    const businessId = userResult.rows[0].business_id;
+
+    // Get all positions for this business (excluding pull_method from response)
+    const result = await pool.query(
+      `SELECT id, business_id, job_title, job_description, created_at, updated_at
+       FROM positions 
+       WHERE business_id = $1
+       ORDER BY created_at DESC`,
+      [businessId]
+    );
+
+    res.json({ positions: result.rows });
+  } catch (error) {
+    console.error('Get positions error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Create a new position for the authenticated business user
+app.post('/api/business/positions', verifyAuth, async (req, res) => {
+  try {
+    if (req.user.role !== 'business') {
+      return res.status(403).json({ error: 'Only business users can create positions' });
+    }
+
+    // Get business_id from user
+    const userResult = await pool.query(
+      'SELECT business_id FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+
+    if (userResult.rows.length === 0 || !userResult.rows[0].business_id) {
+      return res.status(403).json({ error: 'User is not associated with a business' });
+    }
+
+    const businessId = userResult.rows[0].business_id;
+
+    const { job_title, job_description } = req.body;
+
+    if (!job_title || !job_title.trim()) {
+      return res.status(400).json({ error: 'Job title is required' });
+    }
+
+    // Create the position (pull_method is not set - remains NULL, hidden from user)
+    const result = await pool.query(
+      `INSERT INTO positions (business_id, job_title, job_description, created_at, updated_at)
+       VALUES ($1, $2, $3, NOW(), NOW())
+       RETURNING id, business_id, job_title, job_description, created_at, updated_at`,
+      [businessId, job_title.trim(), job_description?.trim() || null]
+    );
+
+    res.status(201).json({ position: result.rows[0] });
+  } catch (error) {
+    console.error('Create position error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Update a position for the authenticated business user
+app.patch('/api/business/positions/:id', verifyAuth, async (req, res) => {
+  try {
+    if (req.user.role !== 'business') {
+      return res.status(403).json({ error: 'Only business users can update positions' });
+    }
+
+    // Get business_id from user
+    const userResult = await pool.query(
+      'SELECT business_id FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+
+    if (userResult.rows.length === 0 || !userResult.rows[0].business_id) {
+      return res.status(403).json({ error: 'User is not associated with a business' });
+    }
+
+    const businessId = userResult.rows[0].business_id;
+    const positionId = parseInt(req.params.id);
+
+    // Verify position belongs to this business
+    const positionCheck = await pool.query(
+      'SELECT id FROM positions WHERE id = $1 AND business_id = $2',
+      [positionId, businessId]
+    );
+
+    if (positionCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Position not found' });
+    }
+
+    const { job_title, job_description } = req.body;
+
+    if (job_title !== undefined && (!job_title || !job_title.trim())) {
+      return res.status(400).json({ error: 'Job title cannot be empty' });
+    }
+
+    // Build dynamic update query (only job_title and job_description can be updated)
+    const updates = [];
+    const values = [];
+    let paramCount = 1;
+
+    if (job_title !== undefined) {
+      updates.push(`job_title = $${paramCount++}`);
+      values.push(job_title.trim());
+    }
+
+    if (job_description !== undefined) {
+      updates.push(`job_description = $${paramCount++}`);
+      values.push(job_description?.trim() || null);
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ error: 'No fields to update' });
+    }
+
+    updates.push(`updated_at = CURRENT_TIMESTAMP`);
+    values.push(positionId);
+
+    // Update the position
+    const result = await pool.query(
+      `UPDATE positions 
+       SET ${updates.join(', ')}
+       WHERE id = $${paramCount}
+       RETURNING id, business_id, job_title, job_description, created_at, updated_at`,
+      values
+    );
+
+    res.json({ position: result.rows[0] });
+  } catch (error) {
+    console.error('Update position error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Delete a position for the authenticated business user
+app.delete('/api/business/positions/:id', verifyAuth, async (req, res) => {
+  try {
+    if (req.user.role !== 'business') {
+      return res.status(403).json({ error: 'Only business users can delete positions' });
+    }
+
+    // Get business_id from user
+    const userResult = await pool.query(
+      'SELECT business_id FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+
+    if (userResult.rows.length === 0 || !userResult.rows[0].business_id) {
+      return res.status(403).json({ error: 'User is not associated with a business' });
+    }
+
+    const businessId = userResult.rows[0].business_id;
+    const positionId = parseInt(req.params.id);
+
+    // Verify position belongs to this business
+    const positionCheck = await pool.query(
+      'SELECT id FROM positions WHERE id = $1 AND business_id = $2',
+      [positionId, businessId]
+    );
+
+    if (positionCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Position not found' });
+    }
+
+    // Delete the position
+    await pool.query(
+      'DELETE FROM positions WHERE id = $1',
+      [positionId]
+    );
+
+    res.json({ message: 'Position deleted successfully' });
+  } catch (error) {
+    console.error('Delete position error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Business profile endpoints
 
 // Get business profile for the authenticated business user

@@ -10,7 +10,7 @@ import Onboard from "./pages/Onboard";
 import Compliance from "./pages/Compliance";
 import Login from "./pages/Login";
 import { AdminDashboard } from "./pages/admin";
-import { BusinessOwnerDashboard, LocationSelection, Locations, Profile } from "./pages/business";
+import { BusinessOwnerDashboard, LocationSelection, Locations, Positions, Profile, OpeningDetail } from "./pages/business";
 import { EmployeeDashboard } from "./pages/employee";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
@@ -633,10 +633,26 @@ function AppRoutes() {
         }
       />
       <Route
+        path="/business-owner/positions"
+        element={
+          <ProtectedRoute allowedRoles={['business']}>
+            <Positions />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/business-owner/profile"
         element={
           <ProtectedRoute allowedRoles={['business']}>
             <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/business-owner/openings/:id"
+        element={
+          <ProtectedRoute allowedRoles={['business']}>
+            <OpeningDetail />
           </ProtectedRoute>
         }
       />

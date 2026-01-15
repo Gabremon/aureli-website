@@ -14,6 +14,7 @@ export default function BusinessHeader() {
   const businessNavLinks = [
     { label: "Openings", path: "/business-owner" },
     { label: "Locations", path: "/business-owner/locations" },
+    { label: "Positions", path: "/business-owner/positions" },
     { label: "Profile", path: "/business-owner/profile" },
   ];
 
